@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core | QuantumStrike Systems</title>
+    <!-- Tailwind CSS Play CDN (Perfect for learning and prototyping!) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN (For your padlock and security icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<!-- 
+  CLASS BREAKDOWN:
+  - bg-[#06080c]: Sets our custom Midnight Obsidian background
+  - text-slate-100: Sets our main font color to a soft, readable off-white
+  - min-h-screen: Ensures our body takes up at least the full height of the browser screen
+-->
+<body class="bg-[#06080c] text-slate-100 min-h-screen font-sans">
+
+    <!-- ========================================================
+         1. THE NAVIGATION BAR (HEADER)
+         ======================================================== -->
+    <nav class="bg-[#0b0f17] border-b border-slate-800/60 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <!-- Brand Logo Frame -->
+            <div class="flex items-center gap-3">
+                <!-- Our Custom Blue/Teal Padlock Icon -->
+                <div class="w-10 h-10 rounded-xl bg-blue-600/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <i class="fa-solid fa-lock text-lg"></i>
+                </div>
+                <div>
+                    <span class="text-lg font-black tracking-wider text-white">CORE</span>
+                    <span class="text-[9px] block text-slate-500 font-mono tracking-widest -mt-1">QUANTUMSTRIKE</span>
+                </div>
+            </div>
+
+            <!-- Simple Navigation Links -->
+            <div class="hidden md:flex gap-6 text-sm text-slate-400 font-medium">
+                <a href="#" class="hover:text-white transition-colors">Commands</a>
+                <a href="#" class="hover:text-white transition-colors">Premium</a>
+                <a href="#" class="hover:text-white transition-colors">Support</a>
+            </div>
+
+            <!-- Login CTA Button -->
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200">
+                <i class="fa-brands fa-discord text-sm mr-2"></i> Control Panel
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========================================================
+         2. THE HERO SECTION (ATTENTION GRABBER)
+         ======================================================== -->
+    <main class="max-w-4xl mx-auto px-6 py-20 text-center">
+        <!-- Badge -->
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-mono mb-6">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            v1.4 - SECURE RELEASE
+        </span>
+
+        <!-- Headline -->
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight mb-6">
+            The Secure Operating Core <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">For Your Community.</span>
+        </h1>
+
+        <!-- Subtitle Paragraph -->
+        <p class="text-slate-400 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+            Stop configuring chaotic, sprawling bot lists. Secure your Discord nodes, monitor active telemetry streams, and run advanced tracking systems entirely from one ultra-fast command panel.
+        </p>
+
+        <!-- CTA Buttons Group -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="#" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.25)] text-sm">
+                Add Core Bot
+            </a>
+            <a href="#" class="w-full sm:w-auto bg-[#0b0f17] hover:bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-8 py-3.5 rounded-xl transition-all text-sm">
+                Explore Features
+            </a>
+        </div>
+    </main>
+
+    <!-- ========================================================
+         3. LEARNER TASK GRID (YOUR FIRST ASSIGNMENT)
+         ======================================================== -->
+
+    <section class="max-w-6xl mx-auto px-6 pb-20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-cyan-500/30 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-5">
+                    <i class="fa-solid fa-heart-pulse text-lg"></i>
+                </div>
+                <h4 class="text-lg font-bold text-white mb-2">Member Wellbeing
+                </h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Execute high-speed administrative actions using the <code class="text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded font-mono text-xs">/moderate</code> command. Issue warnings and server removals to bad actors.
+                </p>
+            </div>
+
+            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-5">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                </div>
+                <h4 class="text-lg font-bold text-white mb-2">Active Telemetry Map</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Track community engagement, member activity and staff moderation logs. Personalised server analytics at a snap!
+                </p>
+            </div>
+
+            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-emerald-500/30 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                </div>
+                <h4 class="text-lg font-bold text-white mb-2">Node Shield</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Deploy structural raid barriers and intelligent rule sets to catch malicious threats and spammers instantly. An AI-driven automod is 24/7 at your service.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

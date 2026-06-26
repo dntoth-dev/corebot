@@ -93,7 +93,7 @@ class General(commands.Cog):
     async def help_command(self, interaction: discord.Interaction):
         # Build the initial aesthetically pleasing Embed
         embed = discord.Embed(
-            title="🔐 Welcome to Shadow Bot",
+            title="🔐 Welcome to Core.",
             description="Control your entire community dashboard natively inside the chat window. Select a category below to get started.",
             color=0x2F3136 # Sleek, near-invisible dark mode background color
         )

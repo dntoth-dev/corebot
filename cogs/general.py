@@ -71,7 +71,7 @@ class HelpMenuView(discord.ui.View):
         # Keep your clean URL button linking to your worker address
         self.add_item(discord.ui.Button(
             label="Launch Core Control Panel", 
-            url="https://core.quantumstrike.workers.dev/dashboard", 
+            url="https://core-bot.pages.dev/", 
             style=discord.ButtonStyle.link,
             emoji="🚀"
         ))

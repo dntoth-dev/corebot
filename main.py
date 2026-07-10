@@ -23,12 +23,7 @@ class MyBot(commands.Bot):
         for ext in initial_extensions:
             await self.load_extension(ext)
             print(f"Loaded extension: {ext}")
-
-        # Copy global tree commands to target guild layout and sync
-        self.tree.copy_global_to(guild=config.GUILD_OBJ)
-        await self.tree.sync(guild=config.GUILD_OBJ)
-        print(f"Synced commands to Guild ID: {config.SHADOW_GUILD_ID}")
-
+            
 bot = MyBot()
 
 @bot.event
@@ -36,6 +31,14 @@ async def on_ready():
     print('------')
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
     print('------')
+    # WARNING: Do not place command sync functions in on_ready, because Discord rate-limits command syncing globally, which could deactivate the bot.
+    
+@bot.event
+async def on_guild_join(guild):
+    # Copy global commands to the newly joined server, then sync
+    bot.tree.copy_global_to(guild=guild)
+    await bot.tree.sync(guild=guild)
+    print(f"Synced commands to new guild: {guild.name}")
 
 if __name__ == "__main__":
     bot.run(config.TOKEN)

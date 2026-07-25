@@ -157,7 +157,7 @@ class Moderation(commands.Cog):
 
     # Checks role configuration based on structural Snowflake IDs
     @app_commands.command(name="mute", description="Timeout a member (mute).")
-    @app_commands.checks.has_permissions(moderate_members=True)
+    @app_commands.checks.has_permissions(mute_members=True)
     async def mute(self, interaction: discord.Interaction, member: discord.Member, minutes: int, reason: str = "No reason provided."):
         duration = datetime.timedelta(minutes=float(minutes))
         if interaction.guild.me.top_role > member.top_role:
@@ -166,8 +166,8 @@ class Moderation(commands.Cog):
         else:
             await interaction.response.send_message("Failed to timeout because my role hierarchy position is too low.", ephemeral=True)
 
-    @app_commands.command(name="unmute", description="Remove timeout (unmute) from a member.")
-    @app_commands.checks.has_any_role(config.SHADOW_ROLE_ID, config.ADMIN_ROLE_ID, config.MODERATOR_ROLE_ID)
+    @app_commands.command(name="unmute", description="Remove timeout from a member (unmute).")
+    @app_commands.checks.has_permissions(mute_members=True)
     async def unmute(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
         if interaction.guild.me.top_role > member.top_role:
             await member.timeout(None, reason=reason)
@@ -176,7 +176,7 @@ class Moderation(commands.Cog):
             await interaction.response.send_message("Failed to untimeout because my role hierarchy position is too low.", ephemeral=True)
 
     @app_commands.command(name="kick", description="Kick a member from the server.")
-    @app_commands.checks.has_any_role(config.SHADOW_ROLE_ID, config.ADMIN_ROLE_ID, config.MODERATOR_ROLE_ID)
+    @app_commands.checks.has_permissions(kick_members=True)
     async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
         if interaction.guild.me.top_role > member.top_role:
             await member.kick(reason=reason)
@@ -185,7 +185,7 @@ class Moderation(commands.Cog):
             await interaction.response.send_message("Failed to kick because my role hierarchy position is too low.", ephemeral=True)
 
     @app_commands.command(name="ban", description="Ban a member from the server.")
-    @app_commands.checks.has_any_role(config.SHADOW_ROLE_ID, config.ADMIN_ROLE_ID, config.MODERATOR_ROLE_ID)
+    @app_commands.checks.has_permissions(ban_members=True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
         if interaction.guild.me.top_role > member.top_role:
             await member.ban(reason=reason)
@@ -194,7 +194,7 @@ class Moderation(commands.Cog):
             await interaction.response.send_message("Failed to ban because my role hierarchy position is too low.", ephemeral=True)
 
     @app_commands.command(name="unban", description="Unban a member from the server.")
-    @app_commands.checks.has_any_role(config.SHADOW_ROLE_ID, config.ADMIN_ROLE_ID, config.MODERATOR_ROLE_ID)
+    @app_commands.checks.has_permissions(ban_members=True)
     async def unban(self, interaction: discord.Interaction, user: discord.User, reason: str ="No reason provided."):
         handled = False
         async for ban_entry in interaction.guild.bans():

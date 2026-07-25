@@ -108,20 +108,14 @@ class General(commands.Cog):
         # Send the beautiful integrated layout back to the user
         await interaction.response.send_message(embed=embed, view=view)
     
+    # Useless
     @app_commands.command(name="hello", description="Says hello to the user.")
     async def hello(self, interaction: discord.Interaction):
         await interaction.response.send_message(f'Hello, {interaction.user.mention}!')
 
-    @app_commands.command(name="pingsb", description="Returns the bot's latency.")
+    @app_commands.command(name="pingcore", description="Returns the bot's latency.")
     async def pingsb(self, interaction: discord.Interaction):
         await interaction.response.send_message(f'Pong! {int(self.bot.latency * 1000)}ms')
-
-    @app_commands.command(name="am_i_shadow", description="Returns if the user matches target configuration.")
-    async def am_i_shadow(self, interaction: discord.Interaction):
-        if str(interaction.user.id) == config.SHADOW_ID:
-            await interaction.response.send_message(f'Yes, you are {config.SHADOW}.')
-        else:
-            await interaction.response.send_message(f"You ain't {config.SHADOW} :(")
 
     @app_commands.command(name="membercount", description="Returns the number of members on the server.")
     async def membercount(self, interaction: discord.Interaction):
@@ -129,12 +123,6 @@ class General(commands.Cog):
             await interaction.response.send_message(f'The server has {interaction.guild.member_count} members!')
         else:
             await interaction.response.send_message("This command must be run within a server.", ephemeral=True)
-
-    @app_commands.command(name='commands', description='View the current available commands of the bot')
-    async def commands_list(self, interaction: discord.Interaction):
-        commands_objs = self.bot.tree.get_commands(guild=config.GUILD_OBJ)
-        command_list = "\n".join([f"`/{cmd.name}` - {cmd.description}" for cmd in commands_objs])
-        await interaction.response.send_message(f"### Current Commands:\n{command_list}")
 
 
 

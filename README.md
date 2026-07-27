@@ -14,5 +14,7 @@ Thinking about purchasing a domain for the bot. `.app` domains work perfectly, t
 2. `corebot.app` - $14.20 on Cloudflare
 
 **This includes another benefit of an email address (Hosted with Zoho Mail):**
+
 `info@quantumstrike.app`, `contact@quantumstrike.app`, `hello@quantumstrike.app`
+
 `info@corebot.app`, `contact@corebot.app`, `hello@corebot.app`

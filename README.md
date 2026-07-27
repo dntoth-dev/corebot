@@ -12,6 +12,7 @@ If you encounter a bug or an error either in the source code or the functionalit
 Thinking about purchasing a domain for the bot. `.app` domains work perfectly, they are owned by google, are relatively cheap, and only allow secure connections (HTTPS).
 1. `quantumstrike.app` - $14.20 on Cloudflare
 2. `corebot.app` - $14.20 on Cloudflare
+
 **This includes another benefit of an email address (Hosted with Zoho Mail):**
 `info@quantumstrike.app`, `contact@quantumstrike.app`, `hello@quantumstrike.app`
 `info@corebot.app`, `contact@corebot.app`, `hello@corebot.app`

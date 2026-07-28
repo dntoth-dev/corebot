@@ -165,6 +165,22 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Timeout successful!\n**User:** {member.name} (ID: {member.id})\n**Duration:** {minutes} minutes\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to timeout because my role hierarchy position is too low.", ephemeral=True)
+    @mute.error
+    async def mute_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        # Check for user missing permissions
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+        # Check for bot missing permissions
+        elif isinstance(error, app_commands.BotMissingPermissions):
+            await interaction.response.send_message("❌ I do not have permission to mute members. Please check my server roles.", ephemeral=True)
+        # Catch-all for other slash command errors
+        else:
+            print(f"An error occurred in /mute: {error}")
+            if not interaction.response.is_done():
+                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+
+
+
 
     @app_commands.command(name="unmute", description="Remove timeout from a member (unmute).")
     @app_commands.checks.has_permissions(mute_members=True)
@@ -174,6 +190,22 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Untimeout successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to untimeout because my role hierarchy position is too low.", ephemeral=True)
+    @unmute.error
+    async def unmute_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        # Check for user missing permissions
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+        # Check for bot missing permissions
+        elif isinstance(error, app_commands.BotMissingPermissions):
+            await interaction.response.send_message("❌ I do not have permission to unmute members. Please check my server roles.", ephemeral=True)
+        # Catch-all for other slash command errors
+        else:
+            print(f"An error occurred in /unmute: {error}")
+            if not interaction.response.is_done():
+                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+
+
+
 
     @app_commands.command(name="kick", description="Kick a member from the server.")
     @app_commands.checks.has_permissions(kick_members=True)
@@ -183,7 +215,23 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Kick successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to kick because my role hierarchy position is too low.", ephemeral=True)
+    @kick.error
+    async def kick_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        # Check for user missing permissions
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+        # Check for bot missing permissions
+        elif isinstance(error, app_commands.BotMissingPermissions):
+            await interaction.response.send_message("❌ I do not have permission to kick members. Please check my server roles.", ephemeral=True)
+        # Catch-all for other slash command errors
+        else:
+            print(f"An error occurred in /kick: {error}")
+            if not interaction.response.is_done():
+                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
 
+
+
+            
     @app_commands.command(name="ban", description="Ban a member from the server.")
     @app_commands.checks.has_permissions(ban_members=True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
@@ -192,6 +240,22 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Ban successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to ban because my role hierarchy position is too low.", ephemeral=True)
+    @ban.error
+    async def ban_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        # Check for user missing permissions
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+        # Check for bot missing permissions
+        elif isinstance(error, app_commands.BotMissingPermissions):
+            await interaction.response.send_message("❌ I do not have permission to ban members. Please check my server roles.", ephemeral=True)
+        # Catch-all for other slash command errors
+        else:
+            print(f"An error occurred in /ban: {error}")
+            if not interaction.response.is_done():
+                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+
+
+
 
     @app_commands.command(name="unban", description="Unban a member from the server.")
     @app_commands.checks.has_permissions(ban_members=True)
@@ -205,6 +269,22 @@ class Moderation(commands.Cog):
                 break
         if not handled:
             await interaction.response.send_message("User not found in ban list.", ephemeral=True)
+    @unban.error
+    async def unban_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        # Check for user missing permissions
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+        # Check for bot missing permissions
+        elif isinstance(error, app_commands.BotMissingPermissions):
+            await interaction.response.send_message("❌ I do not have permission to unban members. Please check my server roles.", ephemeral=True)
+        # Catch-all for other slash command errors
+        else:
+            print(f"An error occurred in /unban: {error}")
+            if not interaction.response.is_done():
+                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+
+
+
     
 async def setup(bot: commands.Bot):
     await bot.add_cog(Moderation(bot))

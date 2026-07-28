@@ -16,7 +16,6 @@ class MyBot(commands.Bot):
         # Dynamically load all cogs from the cogs directory
         initial_extensions = [
             "cogs.general",
-            "cogs.youtube",
             "cogs.moderation",
             "cogs.records",
             "cogs.developer"

@@ -18,3 +18,5 @@ Thinking about purchasing a domain for the bot. `.app` domains work perfectly, t
 `info@quantumstrike.app`, `contact@quantumstrike.app`, `hello@quantumstrike.app`
 
 `info@corebot.app`, `contact@corebot.app`, `hello@corebot.app`
+
+### Domain is planned only after reaching at least 50-100 active servers with active dashboard usage.

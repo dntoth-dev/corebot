@@ -23,6 +23,16 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
+        
+        # Check permissions at execution time to ensure safety
+        if not interaction.user.guild_permissions.mute_members:
+            await interaction.followup.send("❌ You no longer have permission to timeout members.", ephemeral=True)
+            return
+
+        if interaction.guild.me.top_role <= self.target_member.top_role:
+            await interaction.followup.send("❌ Cannot timeout this user. My role hierarchy position is too low.", ephemeral=True)
+            return
+        
         try:
             minutes = int(self.duration.value)
             timeout_duration = datetime.timedelta(minutes=minutes)
@@ -35,10 +45,13 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
             await interaction.followup.send(embed=log_embed, ephemeral=True)
         except ValueError:
             await interaction.followup.send("❌ Duration must be a valid number.", ephemeral=True)
+        except Exception as e:
+            print(f"Failed to timeout member with /moderate. Error: {e}")
+            await interaction.followup.send(f"❌ Error: {str(e)}", ephemeral=True)
 
 
 class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
-    reason = discord.ui.TextInput(label="Reason for Global Purge", style=discord.TextStyle.paragraph, required=False, max_length=300)
+    reason = discord.ui.TextInput(label="Reason for Ban", style=discord.TextStyle.paragraph, required=False, max_length=300)
 
     def __init__(self, target_member: discord.Member):
         super().__init__()
@@ -46,6 +59,14 @@ class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
+        
+        if not interaction.user.guild_permissions.ban_members:
+            await interaction.followup.send("❌ You no longer have permission to ban members.", ephemeral=True)
+            return
+
+        if interaction.guild.me.top_role <= self.target_member.top_role:
+            await interaction.followup.send("❌ Cannot ban this user. My role hierarchy position is too low.", ephemeral=True)
+            return
         try:
             await interaction.guild.ban(self.target_member, reason=self.reason.value or "No reason provided.", delete_message_seconds=86400)
             
@@ -58,7 +79,7 @@ class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
 
 
 class KickModal(discord.ui.Modal, title="🛡️ Core: Kick member"):
-    reason = discord.ui.TextInput(label="Reason for Session Kick", style=discord.TextStyle.paragraph, required=False, max_length=300)
+    reason = discord.ui.TextInput(label="Reason for Kick", style=discord.TextStyle.paragraph, required=False, max_length=300)
 
     def __init__(self, target_member: discord.Member):
         super().__init__()
@@ -66,6 +87,14 @@ class KickModal(discord.ui.Modal, title="🛡️ Core: Kick member"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
+        if not interaction.user.guild_permissions.kick_members:
+            await interaction.followup.send("❌ You no longer have permission to kick members.", ephemeral=True)
+            return
+
+        if interaction.guild.me.top_role <= self.target_member.top_role:
+            await interaction.followup.send("❌ Cannot kick this user. My role hierarchy position is too low.", ephemeral=True)
+            return
+
         try:
             await self.target_member.kick(reason=self.reason.value or "No reason provided.")
             
@@ -86,6 +115,9 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
+        if not interaction.user.guild_permissions.moderate_members:
+            await interaction.folloup.send("❌ You no longer have permission to moderate members.", ephemeral=True)
+            return
         
         # TODO: Hook this up to JSON/SQLite database later for persistent tracking!
         log_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
@@ -101,20 +133,42 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
 # ==========================================
 
 class ModerateDropdown(discord.ui.Select):
-    def __init__(self, target_member: discord.Member):
+    def __init__(self, user_permissions: discord.Permissions, target_member: discord.Member):
         self.target_member = target_member
-        options = [
-            discord.SelectOption(label="Issue a warning", value="warn", description="Issue a written warning to a user", emoji="⚠️"),
-            discord.SelectOption(label="Apply Timeout", value="timeout", description="Temporarily restrict communication access", emoji="⏳"),
-            discord.SelectOption(label="Disconnect User (Kick)", value="kick", description="Remove user from the server", emoji="🥾"),
-            discord.SelectOption(label="Purge Member (Ban)", value="ban", description="Permanently remove user from the server", emoji="🚫")
-        ]
+        options = []
+
+        # Build options dynamically based on native server permissions
+        if user_permissions.moderate_members:
+            options.append(discord.SelectOption(label="Issue a warning", value="warn", description="Issue a written warning to a user", emoji="⚠️"))
+            
+        if user_permissions.mute_members:
+            options.append(discord.SelectOption(label="Apply Timeout", value="timeout", description="Temporarily restrict communication access", emoji="⏳"))
+            
+        if user_permissions.kick_members:
+            options.append(discord.SelectOption(label="Disconnect User (Kick)", value="kick", description="Remove user from the server", emoji="🥾"))
+            
+        if user_permissions.ban_members:
+            options.append(discord.SelectOption(label="Purge Member (Ban)", value="ban", description="Permanently remove user from the server", emoji="🚫"))
+
+        # Fallback if the user somehow executes the command with no granular permissions
+        if not options:
+            options.append(discord.SelectOption(label="No Actions Available", value="none", description="You lack administrative permissions.", emoji="❌"))
+
         super().__init__(placeholder="Select administrative enforcement action...", options=options)
 
     async def callback(self, interaction: discord.Interaction):
         selection = self.values[0]
 
-        # Pass the target_member down directly into whichever form they click!
+        if selection == "none":
+            await interaction.response.send_message("❌ You do not have permissions to perform any actions.", ephemeral=True)
+            return
+
+        # Double check hierarchy before opening form input overlays
+        if selection in ["timeout", "kick", "ban"]:
+            if interaction.guild.me.top_role <= self.target_member.top_role:
+                await interaction.response.send_message("❌ Cannot configure action: This user's role hierarchy matches or exceeds mine.", ephemeral=True)
+                return
+
         if selection == "warn":
             await interaction.response.send_modal(WarnModal(self.target_member))
         elif selection == "timeout":
@@ -126,9 +180,10 @@ class ModerateDropdown(discord.ui.Select):
 
 
 class ModerateView(discord.ui.View):
-    def __init__(self, target_member: discord.Member):
+    def __init__(self, user_permissions: discord.Permissions, target_member: discord.Member):
         super().__init__(timeout=60.0)
-        self.add_item(ModerateDropdown(target_member))
+        # Pass permissions right down into the dropdown component
+        self.add_item(ModerateDropdown(user_permissions, target_member))
 
 
 class Moderation(commands.Cog):
@@ -150,12 +205,18 @@ class Moderation(commands.Cog):
         )
         panel_embed.set_footer(text="Core™ Advanced Moderation Protocol")
         
-        view = ModerateView(target)
-        
-        # We send this as ephemeral=True so regular users can't see the mod panel or spam it
+        # Pull permissions directly from the interaction environment
+        view = ModerateView(interaction.user.guild_permissions, target)
         await interaction.response.send_message(embed=panel_embed, view=view, ephemeral=True)
 
-    # Checks role configuration based on structural Snowflake IDs
+    @moderate_command.error
+    async def moderate_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("❌ You do not have permission to use the moderation terminal panel.", ephemeral=True)
+        else:
+            print(f"An error occurred in /moderate: {error}")
+
+    # Standard linear slash commands below...
     @app_commands.command(name="mute", description="Timeout a member (mute).")
     @app_commands.checks.has_permissions(mute_members=True)
     async def mute(self, interaction: discord.Interaction, member: discord.Member, minutes: int, reason: str = "No reason provided."):
@@ -165,22 +226,17 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Timeout successful!\n**User:** {member.name} (ID: {member.id})\n**Duration:** {minutes} minutes\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to timeout because my role hierarchy position is too low.", ephemeral=True)
+
     @mute.error
     async def mute_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        # Check for user missing permissions
         if isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        # Check for bot missing permissions
         elif isinstance(error, app_commands.BotMissingPermissions):
             await interaction.response.send_message("❌ I do not have permission to mute members. Please check my server roles.", ephemeral=True)
-        # Catch-all for other slash command errors
         else:
             print(f"An error occurred in /mute: {error}")
             if not interaction.response.is_done():
                 await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
-
-
-
 
     @app_commands.command(name="unmute", description="Remove timeout from a member (unmute).")
     @app_commands.checks.has_permissions(mute_members=True)
@@ -190,22 +246,17 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Untimeout successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to untimeout because my role hierarchy position is too low.", ephemeral=True)
+
     @unmute.error
     async def unmute_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        # Check for user missing permissions
         if isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        # Check for bot missing permissions
         elif isinstance(error, app_commands.BotMissingPermissions):
             await interaction.response.send_message("❌ I do not have permission to unmute members. Please check my server roles.", ephemeral=True)
-        # Catch-all for other slash command errors
         else:
             print(f"An error occurred in /unmute: {error}")
             if not interaction.response.is_done():
                 await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
-
-
-
 
     @app_commands.command(name="kick", description="Kick a member from the server.")
     @app_commands.checks.has_permissions(kick_members=True)
@@ -215,23 +266,18 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Kick successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to kick because my role hierarchy position is too low.", ephemeral=True)
+
     @kick.error
     async def kick_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        # Check for user missing permissions
         if isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        # Check for bot missing permissions
         elif isinstance(error, app_commands.BotMissingPermissions):
             await interaction.response.send_message("❌ I do not have permission to kick members. Please check my server roles.", ephemeral=True)
-        # Catch-all for other slash command errors
         else:
             print(f"An error occurred in /kick: {error}")
             if not interaction.response.is_done():
                 await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
 
-
-
-            
     @app_commands.command(name="ban", description="Ban a member from the server.")
     @app_commands.checks.has_permissions(ban_members=True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
@@ -240,22 +286,17 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Ban successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
         else:
             await interaction.response.send_message("Failed to ban because my role hierarchy position is too low.", ephemeral=True)
+
     @ban.error
     async def ban_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        # Check for user missing permissions
         if isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        # Check for bot missing permissions
         elif isinstance(error, app_commands.BotMissingPermissions):
             await interaction.response.send_message("❌ I do not have permission to ban members. Please check my server roles.", ephemeral=True)
-        # Catch-all for other slash command errors
         else:
             print(f"An error occurred in /ban: {error}")
             if not interaction.response.is_done():
                 await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
-
-
-
 
     @app_commands.command(name="unban", description="Unban a member from the server.")
     @app_commands.checks.has_permissions(ban_members=True)
@@ -269,22 +310,17 @@ class Moderation(commands.Cog):
                 break
         if not handled:
             await interaction.response.send_message("User not found in ban list.", ephemeral=True)
+
     @unban.error
     async def unban_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        # Check for user missing permissions
         if isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
-        # Check for bot missing permissions
         elif isinstance(error, app_commands.BotMissingPermissions):
             await interaction.response.send_message("❌ I do not have permission to unban members. Please check my server roles.", ephemeral=True)
-        # Catch-all for other slash command errors
         else:
             print(f"An error occurred in /unban: {error}")
             if not interaction.response.is_done():
                 await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
 
-
-
-    
 async def setup(bot: commands.Bot):
     await bot.add_cog(Moderation(bot))

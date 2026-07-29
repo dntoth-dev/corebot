@@ -11,12 +11,11 @@ class MyBot(commands.Bot):
         intents.message_content = True
         
         super().__init__(command_prefix="!", intents=intents)
-
+        
     async def setup_hook(self):
         # Dynamically load all cogs from the cogs directory
         initial_extensions = [
             "cogs.general",
-            "cogs.youtube",
             "cogs.moderation",
             "cogs.records",
             "cogs.developer"

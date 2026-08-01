@@ -40,6 +40,36 @@ async def on_guild_join(guild):
     bot.tree.copy_global_to(guild=guild)
     await bot.tree.sync(guild=guild)
     print(f"Synced commands to new guild: {guild.name}")
+    
+    bot_role = guild.me.top_role
+    
+    # Check if there are dangerous configurations (e.g., administrator roles above the bot)
+    # Or simply check if it's sitting near the bottom of the list
+    roles_above_bot = [role for role in guild.roles if role > bot_role and not role.is_default()]
+    
+    if roles_above_bot:
+        # Construct a helpful notice for the owner
+        msg = (
+            f"👋 **Thanks for inviting me to {guild.name}!**\n\n"
+            f"⚠️ **Important Setup Action Required:**\n"
+            f"To allow me to effectively moderate or manage users, my integration role (**{bot_role.name}**) "
+            f"must be moved to the **very top** of your server's role settings hierarchy.\n\n"
+            f"**How to fix:**\n"
+            f"1. Go to **Server Settings** > **Roles**.\n"
+            f"2. Locate the **{bot_role.name}** role.\n"
+            f"3. Click and drag it above your staff/moderator roles.\n"
+            f"4. Click **Save Changes**."
+        )
+        
+        # Attempt to DM the server owner
+        try:
+            await guild.owner.send(msg)
+        except discord.Forbidden:
+            # Fallback: Find the first available system or text channel to alert staff
+            for channel in guild.text_channels:
+                if channel.permissions_for(guild.me).send_messages:
+                    await channel.send(f"⚠️ **Notice to Server Owner ({guild.owner.mention}):**\n\n{msg}")
+                    break
 
 
 # --- Global Sync Command Setup ---

@@ -18,7 +18,8 @@ class MyBot(commands.Bot):
             "cogs.general",
             "cogs.moderation",
             "cogs.records",
-            "cogs.developer"
+            "cogs.developer",
+            "cogs.security"
         ]
         
         for ext in initial_extensions:

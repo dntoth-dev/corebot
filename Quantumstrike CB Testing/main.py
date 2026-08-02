@@ -48,6 +48,8 @@ async def on_guild_join(guild):
     await bot.tree.sync(guild=guild)
     print(f"Synced commands to new guild: {guild.name}")
     
+    
+    
     bot_role = guild.me.top_role
     
     # Check if there are dangerous configurations (e.g., administrator roles above the bot)

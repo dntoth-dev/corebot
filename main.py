@@ -84,15 +84,16 @@ async def on_guild_join(guild: discord.Guild):
                     await channel.send(f"⚠️ **Notice to Server Owner ({guild.owner.mention}):**\n\n{msg}")
                     break
 
-@commands.Cog.listener()
-async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
+@bot.event
+async def on_guild_update(before: discord.Guild, after: discord.Guild):
     # Only update the database if the name itself was modified
     if before.name != after.name:
         payload = {
             "guild_id": after.id,
             "guild_name": after.name
         }
-        await self.bot.db.client.table("server_settings").upsert(payload).execute()
+        if bot.db.client:
+            bot.db.client.table("server_settings").upsert(payload).execute()
 
 # --- Global Sync Command Setup ---
 

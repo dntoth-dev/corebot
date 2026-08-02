@@ -42,11 +42,17 @@ async def on_ready():
     # WARNING: Do not place command sync functions in on_ready, because Discord rate-limits command syncing globally, which could deactivate the bot.
     
 @bot.event
-async def on_guild_join(guild):
+async def on_guild_join(guild: discord.Guild):
     # Copy global commands to the newly joined server, then sync
     bot.tree.copy_global_to(guild=guild)
     await bot.tree.sync(guild=guild)
     print(f"Synced commands to new guild: {guild.name}")
+
+    # Register guild to database at join
+    guild_data = {"guild_name": guild.name, "guild_id": guild.id}
+    if bot.db.client:
+        bot.db.client.table("server_settings").upsert(guild_data).execute()
+    
     
     bot_role = guild.me.top_role
     
@@ -78,6 +84,15 @@ async def on_guild_join(guild):
                     await channel.send(f"⚠️ **Notice to Server Owner ({guild.owner.mention}):**\n\n{msg}")
                     break
 
+@commands.Cog.listener()
+async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
+    # Only update the database if the name itself was modified
+    if before.name != after.name:
+        payload = {
+            "guild_id": after.id,
+            "guild_name": after.name
+        }
+        await self.bot.db.client.table("server_settings").upsert(payload).execute()
 
 # --- Global Sync Command Setup ---
 

@@ -70,7 +70,8 @@ async def on_guild_join(guild: discord.Guild):
             f"1. Go to **Server Settings** > **Roles**.\n"
             f"2. Locate the **{bot_role.name}** role.\n"
             f"3. Click and drag it above your staff/moderator roles.\n"
-            f"4. Click **Save Changes**."
+            f"4. Click **Save Changes**.\n"
+            f"For other information and commands, use the `/help` command, where you can also join my support server!"
         )
         
         # Attempt to DM the server owner

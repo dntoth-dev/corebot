@@ -70,10 +70,17 @@ class HelpMenuView(discord.ui.View):
         
         # Keep your clean URL button linking to your worker address
         self.add_item(discord.ui.Button(
-            label="Launch Core Control Panel", 
+            label="Launch Core Website", 
             url="https://core-bot.pages.dev/", 
             style=discord.ButtonStyle.link,
             emoji="🚀"
+        ))
+        
+        self.add_item(discord.ui.Button(
+            label="Join Support Server",
+            url="https://discord.gg/ydUKrcyf5Z",
+            style=discord.ButtonStyle.link,
+            emoji="📢"
         ))
 
     async def on_timeout(self):

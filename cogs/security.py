@@ -102,10 +102,9 @@ class Security(commands.Cog):
                 return
 
             # Update DB state to Enabled
-            enable_payload = {"guild_id": interaction.guild.id, "sentry_enabled": True, "sentry_channel_id": current_channel_id}
+            enable_payload = {"guild_name": interaction.guild.name, "guild_id": interaction.guild.id, "sentry_enabled": True, "sentry_channel_id": current_channel_id}
             await self.bot.db.client.table("server_settings").upsert(enable_payload).execute()
             
-            # LEFT HERE -------------------------------------------------------------------------------------------------------------------------------------- 
 
             embed = discord.Embed(
                 title="🔒 Security System Active",
@@ -140,7 +139,7 @@ class Security(commands.Cog):
         elif action == "disable":
             # Update DB state to Disabled (passing the current channel ID to preserve it)
             
-            disable_payload = {"guild_id": interaction.guild.id, "sentry_enabled": False, "sentry_channel_id": current_channel_id}
+            disable_payload = {"guild_name": interaction.guild.name, "guild_id": interaction.guild.id, "sentry_enabled": False, "sentry_channel_id": current_channel_id}
             await self.bot.db.client.table("server_settings").upsert(disable_payload).execute()
             
             await interaction.followup.send("🔓 **Sentry Deactivated:** The security tripwire is now **OFF**.", ephemeral=True)
@@ -151,7 +150,7 @@ class Security(commands.Cog):
                 return
 
             # Upsert new channel ID to Supabase while keeping current enabled state
-            set_payload = {"guild_id": interaction.guild.id, "sentry_enabled": current_enabled, "sentry_channel_id": channel.id}
+            set_payload = {"guild_name": interaction.guild.name, "guild_id": interaction.guild.id, "sentry_enabled": current_enabled, "sentry_channel_id": channel.id}
             await self.bot.db.client.table("server_settings").upsert(set_payload).execute()
             
             status_text = "and is currently **ON**" if current_enabled else "but is currently **OFF** (use `/sentry action:Enable` to activate)"

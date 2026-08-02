@@ -23,11 +23,11 @@
             <div class="hidden md:flex gap-6 text-sm text-slate-400 font-medium">
                 <a href="index.html#" class="hover:text-white transition-colors">Commands</a>
                 <a href="index.html#" class="hover:text-white transition-colors">Premium</a>
-                <a href="index.html#" class="hover:text-white transition-colors">Support</a>
+                <a href="https://discord.gg/ydUKrcyf5Z" class="hover:text-white transition-colors">Support</a>
             </div>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200">
-                <i class="fa-brands fa-discord text-sm mr-2"></i> Control Panel
-            </button>
+            <a href="https://discord.com/oauth2/authorize?client_id=1380982775016062986&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
+                <i class="fa-brands fa-discord text-sm mr-2"></i> Get Started
+            </a>
         </div>
     </nav>
 
@@ -46,7 +46,7 @@
 
     <main class="max-w-4xl mx-auto px-6 py-16">
         <div class="bg-blue-500/5 border border-blue-500/20 rounded-xl p-6 mb-12">
-            <p class="text-sm text-slate-300"><span class="font-semibold">Last Updated:</span> June 25, 2026</p>
+            <p class="text-sm text-slate-300"><span class="font-semibold">Last Updated:</span> August 2, 2026</p>
         </div>
 
         <section class="mb-12">
@@ -71,7 +71,7 @@
                 <div>
                     <h2 class="text-2xl font-bold text-white mb-3">Data Accessed by Core</h2>
                     <p class="text-slate-400 leading-relaxed mb-4">
-                        Core does not store personal data in a separate database in the current implementation. It accesses the following Discord-provided information only when needed to run commands and moderation actions:
+                        Core utilizes a secure Supabase database to persistently store configuration state, server settings, and necessary moderation logging metrics. The bot accesses the following information to operate efficiently:
                     </p>
                     <ul class="text-slate-400 space-y-2 ml-4 list-disc">
                         <li>Discord user IDs, usernames, and mentions for command responses</li>
@@ -134,6 +134,7 @@
                     <ul class="text-slate-400 space-y-2 ml-4 list-disc">
                         <li>YouTube Data API for fetching recent videos from a configured channel</li>
                         <li>Discord API for member, audit log, and moderation actions</li>
+                        <li>Supabase for secure, persistent cloud data storage and configuration state management</li>
                     </ul>
                     <p class="text-slate-400 leading-relaxed">
                         No other analytics or tracking services are currently integrated into this bot or the site.
@@ -164,11 +165,17 @@
             <p class="text-slate-400 mb-6">
                 This policy reflects the current implementation. If the bot is extended in the future to persist data, this page will be updated accordingly.
             </p>
-            <a href="tos.html" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="tos.html" class="inline-flex items-center justify-center gap-2 bg-slate-850 hover:bg-slate-800 border border-slate-700 text-white font-semibold px-6 py-3 rounded-lg transition-all">
                 <i class="fa-solid fa-file-contract text-sm"></i>
-                View Terms of Service
-            </a>
-        </div>
+                    View Terms of Service
+                </a>
+                <a href="https://discord.gg/ydUKrcyf5Z" target="_blank" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all">
+                <i class="fa-brands fa-discord text-sm"></i>
+                    Join Support Server
+                </a>
+            </div>
+        </div>    
     </main>
 
     <footer class="bg-[#0b0f17] border-t border-slate-800/60 mt-20 py-12">
@@ -183,6 +190,7 @@
                 <div class="flex gap-8 text-sm">
                     <a href="tos.html" class="text-slate-400 hover:text-white transition-colors">Terms of Service</a>
                     <a href="privacy-policy.html" class="text-slate-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="https://discord.gg/ydUKrcyf5Z" target="_blank" class="hover:text-white transition-colors">Support</a>
                 </div>
             </div>
             <div class="text-center mt-8 pt-8 border-t border-slate-800/40">

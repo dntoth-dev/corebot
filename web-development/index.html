@@ -38,13 +38,13 @@
             <div class="hidden md:flex gap-6 text-sm text-slate-400 font-medium">
                 <a href="#" class="hover:text-white transition-colors">Commands</a>
                 <a href="#" class="hover:text-white transition-colors">Premium</a>
-                <a href="#" class="hover:text-white transition-colors">Support</a>
+                <a href="https://discord.gg/ydUKrcyf5Z" class="hover:text-white transition-colors">Support</a>
             </div>
 
             <!-- Login CTA Button -->
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200">
-                <i class="fa-brands fa-discord text-sm mr-2"></i> Control Panel
-            </button>
+            <a href="https://discord.com/oauth2/authorize?client_id=1380982775016062986&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
+                <i class="fa-brands fa-discord text-sm mr-2"></i> Get Started
+            </a>
         </div>
     </nav>
 
@@ -55,7 +55,7 @@
         <!-- Badge -->
         <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-mono mb-6">
             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            v1.4 - SECURE RELEASE
+            v0.1 STABLE RELEASE
         </span>
 
         <!-- Headline -->
@@ -71,50 +71,52 @@
 
         <!-- CTA Buttons Group -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="#" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.25)] text-sm">
+            <a href="https://discord.com/oauth2/authorize?client_id=1380982775016062986&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.25)] text-sm">
                 Add Core Bot
             </a>
-            <a href="#" class="w-full sm:w-auto bg-[#0b0f17] hover:bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-8 py-3.5 rounded-xl transition-all text-sm">
+            <a href="#features" class="w-full sm:w-auto bg-[#0b0f17] hover:bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-8 py-3.5 rounded-xl transition-all text-sm">
                 Explore Features
             </a>
         </div>
     </main>
 
     <!-- ========================================================
-         3. LEARNER TASK GRID (YOUR FIRST ASSIGNMENT)
+         3. CONFIGURATION HIGHLIGHT GRID
          ======================================================== -->
 
-    <section class="max-w-6xl mx-auto px-6 pb-20">
+    <section id="features" class="max-w-6xl mx-auto px-6 pb-20">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
+            <!-- Card 1: Secure Moderation Engine -->
             <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-cyan-500/30 transition-all duration-300">
                 <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-5">
-                    <i class="fa-solid fa-heart-pulse text-lg"></i>
-                </div>
-                <h4 class="text-lg font-bold text-white mb-2">Member Wellbeing
-                </h4>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Execute high-speed administrative actions using the <code class="text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded font-mono text-xs">/moderate</code> command. Issue warnings and server removals to bad actors.
-                </p>
-            </div>
-
-            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300">
-                <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-5">
-                    <i class="fa-solid fa-chart-line text-lg"></i>
-                </div>
-                <h4 class="text-lg font-bold text-white mb-2">Active Telemetry Map</h4>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                    Track community engagement, member activity and staff moderation logs. Personalised server analytics at a snap!
-                </p>
-            </div>
-
-            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-emerald-500/30 transition-all duration-300">
-                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5">
                     <i class="fa-solid fa-shield-halved text-lg"></i>
                 </div>
-                <h4 class="text-lg font-bold text-white mb-2">Node Shield</h4>
+                <h4 class="text-lg font-bold text-white mb-2">Secure Moderation Engine</h4>
                 <p class="text-slate-400 text-sm leading-relaxed">
-                    Deploy structural raid barriers and intelligent rule sets to catch malicious threats and spammers instantly. An AI-driven automod is 24/7 at your service.
+                    Execute high-speed administrative actions, issue targeted warnings, and isolate bad actors instantly using optimized, secure application interfaces.
+                </p>
+            </div>
+
+            <!-- Card 2: Intelligent Honeypot Layer -->
+            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-emerald-500/30 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-5">
+                    <i class="fa-solid fa-virus-covid-slash text-lg"></i>
+                </div>
+                <h4 class="text-lg font-bold text-white mb-2">Node Honeypot Shield</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Deploy silent structural traps to catch malicious raid bots, spammers, and automated user accounts before they can impact your active community.
+                </p>
+            </div>
+
+            <!-- Card 3: Supabase Telemetry Engine -->
+            <div class="bg-[#0b0f17] border border-slate-800/60 rounded-2xl p-6 hover:border-blue-500/30 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-5">
+                    <i class="fa-solid fa-database text-lg"></i>
+                </div>
+                <h4 class="text-lg font-bold text-white mb-2">Persistent Node State</h4>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Powered by a secure Supabase backend to keep your configuration settings, security rules, and active moderation metrics synced flawlessly 24/7.
                 </p>
             </div>
 
@@ -139,6 +141,7 @@
                 <div class="flex gap-8 text-sm">
                     <a href="tos.html" class="text-slate-400 hover:text-white transition-colors">Terms of Service</a>
                     <a href="privacy-policy.html" class="text-slate-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="https://discord.gg/ydUKrcyf5Z" target="_blank" class="hover:text-white transition-colors">Support</a>
                 </div>
             </div>
 

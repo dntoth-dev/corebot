@@ -197,16 +197,25 @@ class Moderation(commands.Cog):
     @app_commands.command(name="moderate", description="Launches Core's central all-in-one administrative terminal panel.")
     @app_commands.default_permissions(moderate_members=True)
     async def moderate_command(self, interaction: discord.Interaction, target: discord.Member):
+        
+        if not interaction.guild:
+            return
+        
+        is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
+        if not (interaction.permissions.moderate_members or is_owner):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+            return
+        
         panel_embed = discord.Embed(
             title="🛡️ Core System | Administration Console",
             description=(
-                f"Target Configuration Locked: {target.mention} (`{target.id}`)\n\n"
+                f"Target Member Locked: {target.mention} (`{target.id}`)\n\n"
                 "Select an administrative command from the dropdown matrix below. "
                 "Choosing an action will launch a secure parameter input form."
             ),
             color=0x2F3136
         )
-        panel_embed.set_footer(text="Core™ Advanced Moderation Protocol")
+        panel_embed.set_footer(text="Advanced Moderation Protocol")
         
         # Pull permissions directly from the interaction environment
         view = ModerateView(interaction, target)
@@ -238,6 +247,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name="mute", description="Timeout a member (mute).")
     @app_commands.default_permissions(moderate_members=True)
     async def mute(self, interaction: discord.Interaction, member: discord.Member, minutes: int, reason: str = "No reason provided."):
+        
+        if not interaction.guild:
+            return
+        
         is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
         if not (interaction.permissions.moderate_members or is_owner):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
@@ -273,6 +286,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name="unmute", description="Remove timeout from a member (unmute).")
     @app_commands.default_permissions(moderate_members=True)
     async def unmute(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
+        
+        if not interaction.guild:
+            return
+        
         is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
         if not (interaction.permissions.moderate_members or is_owner):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
@@ -310,6 +327,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name="kick", description="Kick a member from the server.")
     @app_commands.default_permissions(kick_members=True)
     async def kick(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
+        
+        if not interaction.guild:
+            return
+        
         is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
         if not (interaction.permissions.kick_members or is_owner):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
@@ -347,6 +368,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name="ban", description="Ban a member from the server.")
     @app_commands.default_permissions(ban_members=True)
     async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = "No reason provided."):
+        
+        if not interaction.guild:
+            return
+        
         is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
         if not (interaction.permissions.ban_members or is_owner):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
@@ -384,6 +409,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name="unban", description="Unban a member from the server.")
     @app_commands.default_permissions(ban_members=True)
     async def unban(self, interaction: discord.Interaction, user: discord.User, reason: str = "No reason provided."):
+        
+        if not interaction.guild:
+            return
+        
         is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
         if not (interaction.permissions.ban_members or is_owner):
             await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)

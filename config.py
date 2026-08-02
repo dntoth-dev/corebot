@@ -18,6 +18,9 @@ GUILD_OBJ = discord.Object(id=SHADOW_GUILD_ID)
 # Role IDs (converted to integers for proper role verification chec
 
 YT_API = os.getenv("YOUTUBE_API_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_ANON = os.getenv("SUPABASE_ANON")
 
 # Global YouTube client instance
 youtube = build('youtube', 'v3', developerKey=YT_API) if YT_API else None

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import config
 from typing import Optional, Literal
+from database import SupabaseManager
 
 class MyBot(commands.Bot):
     def __init__(self):
@@ -11,9 +12,14 @@ class MyBot(commands.Bot):
         intents.message_content = True
         
         super().__init__(command_prefix="!", intents=intents)
+        self.db = SupabaseManager()
+
         
     async def setup_hook(self):
         # Dynamically load all cogs from the cogs directory
+        
+        await self.db.initialize()
+        
         initial_extensions = [
             "cogs.general",
             "cogs.moderation",

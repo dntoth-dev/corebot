@@ -18,6 +18,7 @@ class Developer(commands.Cog):
 
     # Should be ! prefix
     @app_commands.command(name="clear_slash", description="Clear all slash commands in case of a bug.")
+    @commands.is_owner()
     async def clear_slash(self, interaction: discord.Interaction):
         if not await self.is_dev(interaction):
             return
@@ -30,6 +31,7 @@ class Developer(commands.Cog):
 
     # Should be ! prefix
     @app_commands.command(name="devtest", description="Bot status test command.")
+    @commands.is_owner()
     async def devtest(self, interaction: discord.Interaction):
         if not await self.is_dev(interaction):
             return

@@ -115,7 +115,7 @@ class General(commands.Cog):
 
     @app_commands.command(name="pingcore", description="Returns the bot's latency.")
     async def pingcore(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f'Pong! {int(self.bot.latency * 1000)}ms')
+        await interaction.response.send_message(f'🏓 Pong! {int(self.bot.latency * 1000)}ms')
 
     @app_commands.command(name="membercount", description="Returns the number of members on the server.")
     async def membercount(self, interaction: discord.Interaction):

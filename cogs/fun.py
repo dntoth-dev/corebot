@@ -22,4 +22,7 @@ class Fun(commands.Cog):
         result = random.choice(["Heads", "Tails"])
         await interaction.response.send_message(f"🪙 The coin landed on **{result}**!", ephemeral=True)
 
-    
+
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Fun(bot))

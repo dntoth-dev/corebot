@@ -22,5 +22,7 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON = os.getenv("SUPABASE_ANON")
 
+WEB_URL = "https://core-bot.pages.dev" # rmk: update ts on url change
+
 # Global YouTube client instance
 youtube = build('youtube', 'v3', developerKey=YT_API) if YT_API else None

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Shield — Select Server</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #06080c;
+            color: #cbd5e1;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-slate-800/60 bg-[#0b0f17]/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <i class="fa-solid fa-lock text-sm"></i>
+                </div>
+                <span class="font-bold text-white text-lg tracking-wide">Core <span class="text-emerald-400">Dashboard</span></span>
+            </a>
+
+            <!-- Right Logout Link -->
+            <div class="flex items-center gap-4">
+                <a href="/api/auth/logout" class="text-xs font-semibold text-slate-400 hover:text-white transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-6 py-12 w-full flex-grow">
+        
+        <!-- Header Title -->
+        <div class="mb-8 border-b border-slate-800/60 pb-6">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">Select a Server</h1>
+            <p class="text-slate-400 text-sm mt-1">Choose a Discord server below to configure security policies and slash command modules.</p>
+        </div>
+
+        <!-- Guild Grid Display -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            
+            <!-- Server Card Example 1 -->
+            <a href="dash.html?guild_id=123456789012345678" class="bg-[#0b0f17] border border-slate-800/60 hover:border-emerald-500/40 rounded-2xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] group">
+                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/50 flex items-center justify-center text-slate-300 font-bold text-base flex-shrink-0">
+                    QS
+                </div>
+                <div class="overflow-hidden flex-grow">
+                    <h3 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">QuantumStrike HQ</h3>
+                    <p class="text-[11px] text-slate-500 font-mono truncate">ID: 123456789012345678</p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-600 group-hover:text-emerald-400 transition-colors"></i>
+            </a>
+
+            <!-- Server Card Example 2 -->
+            <a href="dash.html?guild_id=987654321098765432" class="bg-[#0b0f17] border border-slate-800/60 hover:border-emerald-500/40 rounded-2xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] group">
+                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/50 flex items-center justify-center text-slate-300 font-bold text-base flex-shrink-0">
+                    CS
+                </div>
+                <div class="overflow-hidden flex-grow">
+                    <h3 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">Community Shield Testbed</h3>
+                    <p class="text-[11px] text-slate-500 font-mono truncate">ID: 987654321098765432</p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-600 group-hover:text-emerald-400 transition-colors"></i>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Page Footer -->
+    <footer class="border-t border-slate-800/60 py-6 text-center text-slate-500 text-xs">
+        <p>&copy; 2026 Core Bot Infrastructure. Hosted on Cloudflare Pages.</p>
+    </footer>
+
+</body>
+</html>

@@ -42,9 +42,15 @@
             </div>
 
             <!-- Login CTA Button -->
-            <a href="https://discord.com/oauth2/authorize?client_id=1380982775016062986&response_type=code&redirect_uri=https%3A%2F%2Fcore-bot.pages.dev%2Fapi%2Foauth2%2Fauth%2Fcallback&scope=identify+guilds" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
-                <i class="fa-brands fa-discord text-sm mr-2"></i> Get Started
-            </a>
+            {% if is_logged_in %}
+                <a href="/manage.html" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
+                    <i class="fa-solid fa-gauge text-sm mr-2"></i> Dashboard
+                </a>
+            {% else %}
+                <a href="/api/oauth2/auth" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
+                    <i class="fa-brands fa-discord text-sm mr-2"></i> Get Started
+                </a>
+            {% endif %}
         </div>
     </nav>
 
@@ -71,7 +77,7 @@
 
         <!-- CTA Buttons Group -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="https://discord.com/oauth2/authorize?client_id=1380982775016062986&permissions=8&integration_type=0&scope=bot+applications.commands" target="_blank" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.25)] text-sm">
+            <a href="/api/oauth2/join" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-[0_4px_20px_rgba(37,99,235,0.25)] text-sm">
                 Add Core Bot
             </a>
             <a href="#features" class="w-full sm:w-auto bg-[#0b0f17] hover:bg-slate-900 border border-slate-800 text-slate-300 font-semibold px-8 py-3.5 rounded-xl transition-all text-sm">

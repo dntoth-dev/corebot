@@ -25,9 +25,16 @@
                 <a href="index.html#" class="hover:text-white transition-colors">Premium</a>
                 <a href="https://discord.gg/ydUKrcyf5Z" class="hover:text-white transition-colors">Support</a>
             </div>
-            <a href="https://discord.com/oauth2/authorize?client_id=1380982775016062986&response_type=code&redirect_uri=https%3A%2F%2Fcore-bot.pages.dev%2Fapi%2Foauth2%2Fauth%2Fcallback&scope=identify+guilds" target="_blank" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
-                <i class="fa-brands fa-discord text-sm mr-2"></i> Get Started
-            </a>
+            <!-- Login CTA Button -->
+            {% if is_logged_in %}
+                <a href="/manage.html" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
+                    <i class="fa-solid fa-gauge text-sm mr-2"></i> Dashboard
+                </a>
+            {% else %}
+                <a href="/api/oauth2/auth" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-all duration-200 text-center">
+                    <i class="fa-brands fa-discord text-sm mr-2"></i> Get Started
+                </a>
+            {% endif %}
         </div>
     </nav>
 

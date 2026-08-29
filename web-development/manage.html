@@ -50,32 +50,20 @@
 
         <!-- Guild Grid Display -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            
-            <!-- Server Card Example 1 -->
-            <a href="dash.html?guild_id=123456789012345678" class="bg-[#0b0f17] border border-slate-800/60 hover:border-emerald-500/40 rounded-2xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] group">
+            {% for guild in guilds %}
+            <a href="/dash.html?guild_id={{ guild.id }}" class="bg-[#0b0f17] border border-slate-800/60 hover:border-emerald-500/40 rounded-2xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] group">
                 <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/50 flex items-center justify-center text-slate-300 font-bold text-base flex-shrink-0">
-                    QS
+                    {{ guild.name[:2].upper() }}
                 </div>
                 <div class="overflow-hidden flex-grow">
-                    <h3 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">QuantumStrike HQ</h3>
-                    <p class="text-[11px] text-slate-500 font-mono truncate">ID: 123456789012345678</p>
+                    <h3 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">{{ guild.name }}</h3>
+                    <p class="text-[11px] text-slate-500 font-mono truncate">ID: {{ guild.id }}</p>
                 </div>
                 <i class="fa-solid fa-chevron-right text-xs text-slate-600 group-hover:text-emerald-400 transition-colors"></i>
             </a>
-
-            <!-- Server Card Example 2 -->
-            <a href="dash.html?guild_id=987654321098765432" class="bg-[#0b0f17] border border-slate-800/60 hover:border-emerald-500/40 rounded-2xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] group">
-                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700/50 flex items-center justify-center text-slate-300 font-bold text-base flex-shrink-0">
-                    CS
-                </div>
-                <div class="overflow-hidden flex-grow">
-                    <h3 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">Community Shield Testbed</h3>
-                    <p class="text-[11px] text-slate-500 font-mono truncate">ID: 987654321098765432</p>
-                </div>
-                <i class="fa-solid fa-chevron-right text-xs text-slate-600 group-hover:text-emerald-400 transition-colors"></i>
-            </a>
-
+            {% endfor %}
         </div>
+        
     </main>
 
     <!-- Page Footer -->

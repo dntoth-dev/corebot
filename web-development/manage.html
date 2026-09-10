@@ -16,7 +16,13 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <header class="border-b border-slate-800/60 bg-[#0b0f17]/80 backdrop-blur-md sticky top-0 z-50">
+    <!-- Alpha Warning Banner -->
+    <div class="bg-yellow-400 text-slate-950 px-4 py-1.5 text-center text-xs font-bold tracking-wide flex items-center justify-center gap-2 border-b border-yellow-500/50 z-50">
+        <i class="fa-solid fa-triangle-exclamation text-slate-900"></i>
+        <span>ALPHA VERSION — The webpage is under active development and may be unstable.</span>
+    </div>
+
+    <header class="border-b border-slate-800/60 bg-[#0b0f17]/80 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -39,7 +45,6 @@
             <p class="text-slate-400 text-sm mt-1">Choose a Discord server below to configure security policies and slash command modules.</p>
         </div>
 
-        <!-- Managed Server Cards Container (Injected by Edge HTMLRewriter) -->
         <div id="guild-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <!-- Edge function streams guild elements here -->
         </div>

@@ -12,6 +12,8 @@
 
 [Features](#-key-features) • [Architecture](#%EF%B8%8F-tech-stack) • [Roadmap](#-roadmap) • [License](#-license) • [Support](#-issues--support)
 
+• [Website](https://core-bot.pages.dev) •
+
 ---
 
 </div>
@@ -55,7 +57,7 @@ Core Bot is currently on **`v0.1-stable`**. While the core infrastructure is act
 - [x] Core moderation commands (`/moderate`)
 - [x] Automated honeypot anti-spam (`/sentry`)
 - [x] Supabase database schema & configuration binding
-- [/] Cloudflare Pages Functions edge API pipeline
+- [ ] Cloudflare Pages Functions edge API pipeline
 - [ ] Complete Discord OAuth2 login integration
 - [ ] Interactive Web Dashboard UI (`manage.html`)
 - [ ] Public invite link release & self-hosting documentation

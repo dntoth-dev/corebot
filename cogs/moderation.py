@@ -119,7 +119,7 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
         log_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
         log_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
         log_embed.add_field(name="Reason", value=self.reason.value, inline=False)
-        log_embed.set_footer(text="Warning saved to Core system registry.")
+        log_embed.set_footer(text="Attention, saving and logging warnings is not available yet!!")
         
         await interaction.followup.send(embed=log_embed, ephemeral=True)
 
@@ -237,9 +237,11 @@ class Moderation(commands.Cog):
 
 
 
-
     
     # Standard linear slash commands below...
+    
+    # warn..
+    
     @app_commands.command(name="mute", description="Timeout a member (mute).")
     @app_commands.default_permissions(moderate_members=True)
     async def mute(self, interaction: discord.Interaction, member: discord.Member, minutes: int, reason: str = "No reason provided."):

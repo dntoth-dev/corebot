@@ -34,9 +34,16 @@ The project is under active development and regularly updated with new features 
 * **🚨 `/sentry` Defense System:** An automated, 24/7 server protection mechanism against spammers and self-bots using honeypot detection channels that softban unauthorized user-bots upon interaction.
 * **⚙️ Dynamic Configuration:** Customizable guild preferences stored persistently in PostgreSQL.
 * *(More features are being rolled out alongside major production releases.)*
+---
+## 🚧 Limitations
+
+### ⚠️ The most recent commits are not implemented in the current website version.
+Recent commits are for the new website version - still under maintenance - and lives under [https://v02a1.core-bot.pages.dev](https://v02a1.core-bot.pages.dev), which is not accessible to the public yet. The current [webpage](https://core-bot.pages.dev) is static, and features the essentials only, such as a Bot Invite Button, a Homepage, a Privacy-Policy and a Terms Of Service. **There is no dashboard in the current version!**
+
+### ⚠️ User warnings can not be saved in the current version.
+This feature will be included in a future update. It also means that moderation actions can not be logged at this time.
 
 ---
-
 ## 🛠️ Tech Stack
 
 Core Bot combines a Python bot client with modern edge architecture:

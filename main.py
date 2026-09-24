@@ -2,6 +2,10 @@ import discord
 from discord.ext import commands
 import config
 from database import SupabaseManager
+import logging
+
+logger = logging.getLogger("corebot")
+
 
 class MyBot(commands.Bot):
     def __init__(self):
@@ -44,51 +48,74 @@ async def on_ready():
     
 @bot.event
 async def on_guild_join(guild: discord.Guild):
-    # Copy global commands to the newly joined server, then sync
-    bot.tree.copy_global_to(guild=guild)
-    await bot.tree.sync(guild=guild)
-    print(f"Synced commands to new guild: {guild.name}")
-
-    # Register guild to database at join
-    guild_data = {"guild_name": guild.name, "guild_id": guild.id}
+    # 1. Register guild to database at join
+    guild_data = {"guild_name": guild.name, "guild_id": str(guild.id)}
     if bot.db.client:
-        bot.db.client.table("server_settings").upsert(guild_data).execute()
+        try: 
+            await bot.db.client.table("server_settings").upsert(guild_data, on_conflict="guild_id").execute()
+            logger.info(f"Registered guild {guild.name} ({guild.id}) in database.")
+        except Exception as e:
+            logger.error(f"Failed to insert guild {guild.id} into database: {e}")
+            
+    # 2. Get top role safely
+    top_role_name = guild.me.top_role.name if guild.me and guild.me.top_role else "Core"
+            
 
     # Send a message to the server about role hiererarchy requirements
     msg = (
         f"👋 **Thanks for inviting me to {guild.name}!**\n\n"
         f"⚠️ **Important Setup Action Required:**\n"
-        f"To allow me to effectively moderate or manage users, my integration role (**{guild.me.top_role.name}**) "
+        f"To allow me to effectively moderate or manage users, my integration role (**{top_role_name}**) "
         f"must be moved to the **very top** of your server's role settings hierarchy.\n\n"
         f"**How to fix:**\n"
         f"1. Go to **Server Settings** > **Roles**.\n"
-        f"2. Locate the **{guild.me.top_role.name}** role.\n"
+        f"2. Locate the **{top_role_name}** role.\n"
         f"3. Click and drag it above your staff/moderator roles.\n"
         f"4. Click **Save Changes**.\n"
         f"For other information and commands, use the `/help` command, where you can also join my support server!"
     )
         
-    # Attempt to DM the server owner
-    try:
-        await guild.owner.send(msg)
-    except discord.Forbidden:
-        # Fallback: Find the first available system or text channel to alert staff
+    # 3. Resolve server owner safely
+    owner = guild.owner
+    if owner is None:
+        try:
+            owner = await guild.fetch_member(guild.owner_id)
+        except Exception:
+            owner = None
+
+    # 4. Attempt to DM owner or fall back to system/text channel
+    dm_sent = False
+    if owner:
+        try:
+            await owner.send(msg)
+            dm_sent = True
+        except discord.Forbidden:
+            dm_sent = False
+
+    if not dm_sent:
+        owner_mention = owner.mention if owner else "Server Owner"
         for channel in guild.text_channels:
             if channel.permissions_for(guild.me).send_messages:
-                await channel.send(f"⚠️ **Notice to Server Owner ({guild.owner.mention}):**\n\n{msg}")
-                break
+                try:
+                    await channel.send(f"⚠️ **Notice to {owner_mention}:**\n\n{msg}")
+                    break
+                except discord.Forbidden:
+                    continue
 
 @bot.event
 async def on_guild_update(before: discord.Guild, after: discord.Guild):
-    # Only update the database if the name itself was modified
+    # Only update the database if server name changes
     if before.name != after.name:
         payload = {
-            "guild_id": after.id,
+            "guild_id": str(after.id),
             "guild_name": after.name
         }
         if bot.db.client:
-            bot.db.client.table("server_settings").upsert(payload).execute()
- 
+            try:
+                await bot.db.client.table("server_settings").upsert(payload, on_conflict="guild_id").execute()
+            except Exception as e:
+                logger.error(f"Failed to update guild name for {after.id}: {e}")
+
 
 if __name__ == "__main__":
     bot.run(config.TOKEN)

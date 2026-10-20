@@ -3,7 +3,6 @@ from discord import app_commands
 from discord.ext import commands
 import config
 
-
 # region Elements of the /help command
 class HelpDropdown(discord.ui.Select):
     def __init__(self, bot: commands.Bot):
@@ -93,7 +92,7 @@ class HelpMenuView(discord.ui.View):
 # endregion
 
 class General(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         self.bot = bot
 
     @app_commands.command(name="help", description="Open the interactive bot menu.")
@@ -131,8 +130,31 @@ class General(commands.Cog):
         else:
             await interaction.response.send_message("This command must be run within a server.", ephemeral=True)
 
+    @app_commands.command(name="logging", description="Edit action logging settings.")
+    @app_commands.default_permissions(administrator=True)
+    @app_commands.describe(toggle="Toggle logging.")
+    @app_commands.choices(action=[app_commands.Choice(name="Enable", value="enable"), app_commands.Choice(name="Disable", value="disable")])
+    async def logging(self, interaction: discord.Interaction, action: str):
+        await interaction.response.defer(ephemeral=True)
+        if interaction.guild:
+            # Server owner / Admin permission bypass guard
+            is_owner = interaction.guild.owner_id == interaction.user.id
+            if not (interaction.permissions.administrator or is_owner):
+                await interaction.followup.send("❌ You do not have permission to manage logging settings.", ephemeral=True)
+                return
 
 
+            if action == "enable":
+                enable_payload = {"guild_id": interaction.guild.id, "logging_enabled": True}
+                await self.bot.db.client.table("server_settings").upsert(enable_payload).execute()
+            if action == "disable":
+                disable_payload = {"guild_id": interaction.guild.id, "logging_enabled": False}
+                await self.bot.db.client.table("server_settings").upsert(disable_payload).execute()
+            
+            
+            
+            
+        else: return
         
 async def setup(bot: commands.Bot):
     await bot.add_cog(General(bot))

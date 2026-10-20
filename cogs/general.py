@@ -147,13 +147,11 @@ class General(commands.Cog):
             if action == "enable":
                 enable_payload = {"guild_id": interaction.guild.id, "logging_enabled": True}
                 await self.bot.db.client.table("server_settings").upsert(enable_payload).execute()
+                await interaction.followup.send("📝 Logging is now set to **ON**.")
             if action == "disable":
                 disable_payload = {"guild_id": interaction.guild.id, "logging_enabled": False}
                 await self.bot.db.client.table("server_settings").upsert(disable_payload).execute()
-            
-            
-            
-            
+                await interaction.followup.send("❗ Logging is now set to **OFF**.")
         else: return
         
 async def setup(bot: commands.Bot):

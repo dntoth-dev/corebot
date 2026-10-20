@@ -34,11 +34,13 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
             timeout_duration = datetime.timedelta(minutes=minutes)
             await self.target_member.timeout(timeout_duration, reason=self.reason.value or "No reason provided.")
             
-            log_embed = discord.Embed(title="⚡ Action Executed: Timeout", color=0xFF9900)
-            log_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
-            log_embed.add_field(name="Duration", value=f"`{minutes} Mins`", inline=True)
-            log_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
-            await interaction.followup.send(embed=log_embed, ephemeral=True)
+            confirmation_embed = discord.Embed(title="⚡ Action Executed: Timeout", color=0xFF9900)
+            confirmation_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
+            confirmation_embed.add_field(name="Duration", value=f"`{minutes} Mins`", inline=True)
+            confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
+            await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+            
+            # logging_settings = await self.bot.db.client.table("server_settings").select("logging_enabled")
         except ValueError:
             await interaction.followup.send("❌ Duration must be a valid number.", ephemeral=True)
         except Exception as e:
@@ -66,10 +68,10 @@ class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
         try:
             await interaction.guild.ban(self.target_member, reason=self.reason.value or "No reason provided.", delete_message_seconds=86400)
             
-            log_embed = discord.Embed(title="⚡ Action Executed: Ban Purge", color=0xFF0000)
-            log_embed.add_field(name="Target", value=f"{self.target_member.name}", inline=True)
-            log_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
-            await interaction.followup.send(embed=log_embed, ephemeral=True)
+            confirmation_embed = discord.Embed(title="⚡ Action Executed: Ban Purge", color=0xFF0000)
+            confirmation_embed.add_field(name="Target", value=f"{self.target_member.name}", inline=True)
+            confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
+            await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
         except Exception as e:
             await interaction.followup.send(f"❌ Error: {str(e)}", ephemeral=True)
 
@@ -94,10 +96,10 @@ class KickModal(discord.ui.Modal, title="🛡️ Core: Kick member"):
         try:
             await self.target_member.kick(reason=self.reason.value or "No reason provided.")
             
-            log_embed = discord.Embed(title="⚡ Action Executed: Member Kick", color=0x3498DB)
-            log_embed.add_field(name="Target", value=f"{self.target_member.name}", inline=True)
-            log_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
-            await interaction.followup.send(embed=log_embed, ephemeral=True)
+            confirmation_embed = discord.Embed(title="⚡ Action Executed: Member Kick", color=0x3498DB)
+            confirmation_embed.add_field(name="Target", value=f"{self.target_member.name}", inline=True)
+            confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
+            await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
         except Exception as e:
             await interaction.followup.send(f"❌ Error: {str(e)}", ephemeral=True)
 
@@ -116,12 +118,12 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
             return
         
         # TODO: Hook this up to JSON/SQLite database later for persistent tracking!
-        log_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
-        log_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
-        log_embed.add_field(name="Reason", value=self.reason.value, inline=False)
-        log_embed.set_footer(text="Attention, saving and logging warnings is not available yet!!")
+        confirmation_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
+        confirmation_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
+        confirmation_embed.add_field(name="Reason", value=self.reason.value, inline=False)
+        confirmation_embed.set_footer(text="Attention, saving and logging warnings is not available yet!!")
         
-        await interaction.followup.send(embed=log_embed, ephemeral=True)
+        await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
 
 
 # ==========================================

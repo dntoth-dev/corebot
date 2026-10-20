@@ -130,29 +130,101 @@ class General(commands.Cog):
         else:
             await interaction.response.send_message("This command must be run within a server.", ephemeral=True)
 
+
+
     @app_commands.command(name="logging", description="Edit action logging settings.")
     @app_commands.default_permissions(administrator=True)
-    @app_commands.describe(toggle="Toggle logging.")
-    @app_commands.choices(action=[app_commands.Choice(name="Enable", value="enable"), app_commands.Choice(name="Disable", value="disable")])
-    async def logging(self, interaction: discord.Interaction, action: str):
+    @app_commands.describe(
+        action="Choose to enable, disable, or set the logging feature",
+        channel="The text channel to use for logging (Required if action is 'set')."
+    )
+    @app_commands.choices(action=[
+        app_commands.Choice(name="Enable", value="enable"),
+        app_commands.Choice(name="Disable", value="disable"),
+        app_commands.Choice(name="Set Channel", value="set")
+    ])
+    async def logging(self, interaction: discord.Interaction, action: str, channel: discord.TextChannel = None):
         await interaction.response.defer(ephemeral=True)
+        
+        # Server owner / Admin permission bypass guard
         if interaction.guild:
-            # Server owner / Admin permission bypass guard
             is_owner = interaction.guild.owner_id == interaction.user.id
             if not (interaction.permissions.administrator or is_owner):
                 await interaction.followup.send("❌ You do not have permission to manage logging settings.", ephemeral=True)
                 return
 
+            # Pull current config state from database for toggle updates
+            current_settings_response = await self.bot.db.client.table("server_settings") \
+                                            .select("logging_enabled, logging_channel_id") \
+                                            .eq("guild_id", interaction.guild.id) \
+                                            .execute()
+                                            
+            current_settings = current_settings_response.data[0] if current_settings_response.data else None
+            
+            current_channel_id = current_settings.get("logging_channel_id") if current_settings else None
+            current_enabled = current_settings.get("logging_enabled") if current_settings else False
 
             if action == "enable":
-                enable_payload = {"guild_id": interaction.guild.id, "logging_enabled": True}
+                if not current_channel_id:
+                    await interaction.followup.send("⚠️ Cannot enable logging: No channel for logging has been set yet. Use `/logging action:Set Channel` first.", ephemeral=True)
+                    return
+
+                # Update DB state to Enabled
+                enable_payload = {"guild_id": interaction.guild.id, "logging_enabled": True, "logging_channel_id": current_channel_id}
                 await self.bot.db.client.table("server_settings").upsert(enable_payload).execute()
-                await interaction.followup.send("📝 Logging is now set to **ON**.")
-            if action == "disable":
-                disable_payload = {"guild_id": interaction.guild.id, "logging_enabled": False}
+
+
+                embed = discord.Embed(
+                    title="📝 Logging was set to this channel.",
+                    description=(
+                        "**The logging feature was turned on and set to this channel.**\n\n"
+                        "The bot logs user warnings, timeouts (mutes), kicks and bans. "
+                        "`INFORMATION: In the current implementation, it is not possible to change what the bot logs.`\n\n"
+                        "⚠️ **To turn off future logging, use the `/logging action:Disable` command, and follow the instructions.**"
+                    ),
+                    color=discord.Color.yellow()
+                )
+                embed.set_footer(text="Automated Server Surveillance System")
+
+                # Robust Channel Retrieval
+                logging_channel = interaction.guild.get_channel(current_channel_id)
+                if not logging_channel:
+                    try:
+                        logging_channel = await interaction.guild.fetch_channel(current_channel_id)
+                    except discord.HTTPException:
+                        await interaction.followup.send("❌ Error: Could not find or access the configured logging channel.", ephemeral=True)
+                        return
+
+                try:
+                    confirmation_embed = await logging_channel.send(embed=embed)
+                    await confirmation_embed.pin()
+                except discord.Forbidden:
+                    await interaction.followup.send("❌ Error: Bot lacks permission to send or pin messages in the trip channel.", ephemeral=True)
+                    return
+
+                await interaction.followup.send(f"📝 **Logging Active:** Logging is now **ON** and set to <#{current_channel_id}>.", ephemeral=True)
+
+            elif action == "disable":
+                # Update DB state to Disabled (passing the current channel ID to preserve it)
+                
+                disable_payload = {"guild_id": interaction.guild.id, "logging_enabled": False, "logging_channel_id": current_channel_id}
                 await self.bot.db.client.table("server_settings").upsert(disable_payload).execute()
-                await interaction.followup.send("❗ Logging is now set to **OFF**.")
+                
+                await interaction.followup.send("❗ **Logging Deactivated:** Logging is now **OFF**.", ephemeral=True)
+
+            elif action == "set":
+                if not channel:
+                    await interaction.followup.send("❌ Error: You must specify a text channel when choosing 'Set Channel'.", ephemeral=True)
+                    return
+
+                # Upsert new channel ID to Supabase while keeping current enabled state
+                set_payload = {"guild_id": interaction.guild.id, "logging_enabled": current_enabled, "logging_channel_id": channel.id}
+                await self.bot.db.client.table("server_settings").upsert(set_payload).execute()
+                
+                status_text = "and is currently **ON**" if current_enabled else "but is currently **OFF** (use `/logging action:Enable` to activate)"
+                await interaction.followup.send(f"📝 **Logging Configuration Updated:** Logging has been set to {channel.mention} {status_text}.", ephemeral=True)
         else: return
-        
+
+
 async def setup(bot: commands.Bot):
     await bot.add_cog(General(bot))

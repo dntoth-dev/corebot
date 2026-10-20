@@ -70,7 +70,7 @@ class HelpMenuView(discord.ui.View):
         # Keep your clean URL button linking to your worker address
         self.add_item(discord.ui.Button(
             label="Launch Core Website", 
-            url="https://core-bot.pages.dev/", 
+            url=config.WEB_URL, 
             style=discord.ButtonStyle.link,
             emoji="🚀"
         ))

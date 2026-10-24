@@ -3,6 +3,7 @@ import datetime
 from discord import app_commands
 from discord.ext import commands
 import config
+from datetime import datetime, timezone
 
 
 # ==========================================
@@ -34,11 +35,13 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
             timeout_duration = datetime.timedelta(minutes=minutes)
             await self.target_member.timeout(timeout_duration, reason=self.reason.value or "No reason provided.")
             
+            # --- Timeout confirm ---
             confirmation_embed = discord.Embed(title="⚡ Action Executed: Timeout", color=0xFF9900)
             confirmation_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
             confirmation_embed.add_field(name="Duration", value=f"`{minutes} Mins`", inline=True)
             confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
             await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+            
             
             # logging_settings = await self.bot.db.client.table("server_settings").select("logging_enabled")
         except ValueError:
@@ -186,9 +189,9 @@ class ModerateView(discord.ui.View):
         # Pass permissions right down into the dropdown component
         self.add_item(ModerateDropdown(interaction, target_member))
 
-
+# --- | Moderation Class | ---
 class Moderation(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         self.bot = bot
         
     # /moderate command
@@ -240,7 +243,7 @@ class Moderation(commands.Cog):
 
 
     
-    # Standard linear slash commands below...
+    # Single-action moderation commands below...
     
     # warn..
     
@@ -260,6 +263,42 @@ class Moderation(commands.Cog):
         if interaction.guild.me.top_role > member.top_role:
             await member.timeout(duration, reason=reason)
             await interaction.response.send_message(f"### Timeout successful!\n**User:** {member.name} (ID: {member.id})\n**Duration:** {minutes} minutes\n**Reason:** {reason}")
+            
+            logging_config = await self.bot.db.client.table("server_settings") \
+                                            .select("logging_enabled, logging_channel_id") \
+                                            .eq("guild_id", interaction.guild.id) \
+                                            .execute()
+                                            
+            logging_settings = logging_config.data[0] if logging_config.data else None
+            if logging_settings is not None:
+                logging_enabled = logging_settings.get("logging_enabled")
+                if logging_enabled:
+                    logging_channel_id = logging_settings.get("logging_channel_id")
+                    embed = discord.Embed(
+                                title=f"{member.name} was muted",
+                                description=(
+                                    f"Member ID: {member.id}\n"
+                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                                ),
+                                color=discord.Color.dark_grey()
+                            )
+                    embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                    
+                    # Robust Channel Retrieval
+                    logging_channel = interaction.guild.get_channel(logging_channel_id)
+                    if not logging_channel:
+                        try:
+                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                        except discord.HTTPException:
+                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                            return
+                    try:
+                        log = await logging_channel.send(embed=embed)
+                    except discord.Forbidden:
+                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                        return
+                else: return
+            else: return
         else:
             await interaction.response.send_message("Failed to timeout because my role hierarchy position is too low.", ephemeral=True)
 

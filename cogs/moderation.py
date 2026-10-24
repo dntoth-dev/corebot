@@ -14,9 +14,10 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
     duration = discord.ui.TextInput(label="Duration (in minutes)", placeholder="e.g., 5, 60, 1440", required=True, max_length=5)
     reason = discord.ui.TextInput(label="Reason", style=discord.TextStyle.paragraph, required=False, max_length=300)
 
-    def __init__(self, target_member: discord.Member):
+    def __init__(self, target_member: discord.Member, bot):
         super().__init__()
         self.target_member = target_member
+        self.bot = bot
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -42,8 +43,45 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
             confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
             await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
             
-            
-            # logging_settings = await self.bot.db.client.table("server_settings").select("logging_enabled")
+            # region logging
+            logging_config = await self.bot.db.client.table("server_settings") \
+                                            .select("logging_enabled, logging_channel_id") \
+                                            .eq("guild_id", interaction.guild.id) \
+                                            .execute()
+                                            
+            logging_settings = logging_config.data[0] if logging_config.data else None
+            if logging_settings is not None:
+                logging_enabled = logging_settings.get("logging_enabled")
+                if logging_enabled:
+                    logging_channel_id = logging_settings.get("logging_channel_id")
+                    log_embed = discord.Embed(
+                                title=f"{self.target_member.name} was muted.",
+                                description=(
+                                    f"**Mute duration:** {minutes} minutes\n"
+                                    f"**Reason:** {self.reason.value}\n\n"
+                                    f"Member ID: {self.target_member.id}\n"
+                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                                ),
+                                color=discord.Color.dark_grey()
+                            )
+                    log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                    
+                    # Robust Channel Retrieval
+                    logging_channel = interaction.guild.get_channel(logging_channel_id)
+                    if not logging_channel:
+                        try:
+                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                        except discord.HTTPException:
+                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                            return
+                    try:
+                        log = await logging_channel.send(embed=log_embed)
+                    except discord.Forbidden:
+                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                        return
+                else: return
+            else: return
+            # endregion
         except ValueError:
             await interaction.followup.send("❌ Duration must be a valid number.", ephemeral=True)
         except Exception as e:
@@ -54,9 +92,10 @@ class TimeoutModal(discord.ui.Modal, title="🛡️ Core: Timeout member"):
 class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
     reason = discord.ui.TextInput(label="Reason for Ban", style=discord.TextStyle.paragraph, required=False, max_length=300)
 
-    def __init__(self, target_member: discord.Member):
+    def __init__(self, target_member: discord.Member, bot):
         super().__init__()
         self.target_member = target_member
+        self.bot = bot
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -75,6 +114,45 @@ class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
             confirmation_embed.add_field(name="Target", value=f"{self.target_member.name}", inline=True)
             confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
             await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+            
+            # region logging
+            logging_config = await self.bot.db.client.table("server_settings") \
+                                            .select("logging_enabled, logging_channel_id") \
+                                            .eq("guild_id", interaction.guild.id) \
+                                            .execute()
+                                            
+            logging_settings = logging_config.data[0] if logging_config.data else None
+            if logging_settings is not None:
+                logging_enabled = logging_settings.get("logging_enabled")
+                if logging_enabled:
+                    logging_channel_id = logging_settings.get("logging_channel_id")
+                    log_embed = discord.Embed(
+                                title=f"{self.target_member.name} was banned.",
+                                description=(
+                                    f"**Reason:** {self.reason.value}\n\n"
+                                    f"Member ID: {self.target_member.id}\n"
+                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                                ),
+                                color=discord.Color.dark_grey()
+                            )
+                    log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                    
+                    # Robust Channel Retrieval
+                    logging_channel = interaction.guild.get_channel(logging_channel_id)
+                    if not logging_channel:
+                        try:
+                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                        except discord.HTTPException:
+                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                            return
+                    try:
+                        log = await logging_channel.send(embed=log_embed)
+                    except discord.Forbidden:
+                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                        return
+                else: return
+            else: return
+            # endregion
         except Exception as e:
             await interaction.followup.send(f"❌ Error: {str(e)}", ephemeral=True)
 
@@ -82,9 +160,10 @@ class BanModal(discord.ui.Modal, title="🛡️ Core: Ban member"):
 class KickModal(discord.ui.Modal, title="🛡️ Core: Kick member"):
     reason = discord.ui.TextInput(label="Reason for Kick", style=discord.TextStyle.paragraph, required=False, max_length=300)
 
-    def __init__(self, target_member: discord.Member):
+    def __init__(self, target_member: discord.Member, bot):
         super().__init__()
         self.target_member = target_member
+        self.bot = bot
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -103,6 +182,45 @@ class KickModal(discord.ui.Modal, title="🛡️ Core: Kick member"):
             confirmation_embed.add_field(name="Target", value=f"{self.target_member.name}", inline=True)
             confirmation_embed.add_field(name="Reason", value=self.reason.value or "`None specified`", inline=False)
             await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+            
+            # region logging
+            logging_config = await self.bot.db.client.table("server_settings") \
+                                            .select("logging_enabled, logging_channel_id") \
+                                            .eq("guild_id", interaction.guild.id) \
+                                            .execute()
+                                            
+            logging_settings = logging_config.data[0] if logging_config.data else None
+            if logging_settings is not None:
+                logging_enabled = logging_settings.get("logging_enabled")
+                if logging_enabled:
+                    logging_channel_id = logging_settings.get("logging_channel_id")
+                    log_embed = discord.Embed(
+                                title=f"{self.target_member.name} was kicked.",
+                                description=(
+                                    f"**Reason:** {self.reason.value}\n\n"
+                                    f"Member ID: {self.target_member.id}\n"
+                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                                ),
+                                color=discord.Color.dark_grey()
+                            )
+                    log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                    
+                    # Robust Channel Retrieval
+                    logging_channel = interaction.guild.get_channel(logging_channel_id)
+                    if not logging_channel:
+                        try:
+                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                        except discord.HTTPException:
+                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                            return
+                    try:
+                        log = await logging_channel.send(embed=log_embed)
+                    except discord.Forbidden:
+                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                        return
+                else: return
+            else: return
+            # endregion
         except Exception as e:
             await interaction.followup.send(f"❌ Error: {str(e)}", ephemeral=True)
 
@@ -110,9 +228,10 @@ class KickModal(discord.ui.Modal, title="🛡️ Core: Kick member"):
 class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
     reason = discord.ui.TextInput(label="Reason for the warning", style=discord.TextStyle.paragraph, required=True, max_length=300)
 
-    def __init__(self, target_member: discord.Member):
+    def __init__(self, target_member: discord.Member, bot):
         super().__init__()
         self.target_member = target_member
+        self.bot = bot
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -124,9 +243,46 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
         confirmation_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
         confirmation_embed.add_field(name="Target", value=f"{self.target_member.mention}", inline=True)
         confirmation_embed.add_field(name="Reason", value=self.reason.value, inline=False)
-        confirmation_embed.set_footer(text="Attention, saving and logging warnings is not available yet!!")
-        
         await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+        
+        # region logging
+        logging_config = await self.bot.db.client.table("server_settings") \
+                                        .select("logging_enabled, logging_channel_id") \
+                                        .eq("guild_id", interaction.guild.id) \
+                                        .execute()
+                                        
+        logging_settings = logging_config.data[0] if logging_config.data else None
+        if logging_settings is not None:
+            logging_enabled = logging_settings.get("logging_enabled")
+            if logging_enabled:
+                logging_channel_id = logging_settings.get("logging_channel_id")
+                embed = discord.Embed(
+                            title=f"{self.target_member.name} was warned.",
+                            description=(
+                                f"**Reason:** {self.reason.value}\n\n"
+                                f"Member ID: {self.target_member.id}\n"
+                                f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                            ),
+                            color=discord.Color.dark_grey()
+                        )
+                embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                
+                # Robust Channel Retrieval
+                logging_channel = interaction.guild.get_channel(logging_channel_id)
+                if not logging_channel:
+                    try:
+                        logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                    except discord.HTTPException:
+                        await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                        return
+                try:
+                    log = await logging_channel.send(embed=embed)
+                except discord.Forbidden:
+                    await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                    return
+            else: return
+        else: return
+        # endregion
 
 
 # ==========================================
@@ -134,8 +290,9 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
 # ==========================================
 
 class ModerateDropdown(discord.ui.Select):
-    def __init__(self, interaction:discord.Interaction, target_member: discord.Member):
+    def __init__(self, interaction:discord.Interaction, target_member: discord.Member, bot):
         self.target_member = target_member
+        self.bot = bot
         options = []
 
         user_permissions = interaction.permissions
@@ -174,20 +331,20 @@ class ModerateDropdown(discord.ui.Select):
                 return
 
         if selection == "warn":
-            await interaction.response.send_modal(WarnModal(self.target_member))
+            await interaction.response.send_modal(WarnModal(self.target_member, self.bot))
         elif selection == "timeout":
-            await interaction.response.send_modal(TimeoutModal(self.target_member))
+            await interaction.response.send_modal(TimeoutModal(self.target_member, self.bot))
         elif selection == "kick":
-            await interaction.response.send_modal(KickModal(self.target_member))
+            await interaction.response.send_modal(KickModal(self.target_member, self.bot))
         elif selection == "ban":
-            await interaction.response.send_modal(BanModal(self.target_member))
+            await interaction.response.send_modal(BanModal(self.target_member, self.bot))
 
 
 class ModerateView(discord.ui.View):
-    def __init__(self, interaction:discord.Interaction, target_member: discord.Member):
+    def __init__(self, interaction:discord.Interaction, target_member: discord.Member, bot):
         super().__init__(timeout=60.0)
         # Pass permissions right down into the dropdown component
-        self.add_item(ModerateDropdown(interaction, target_member))
+        self.add_item(ModerateDropdown(interaction, target_member, bot))
 
 # --- | Moderation Class | ---
 class Moderation(commands.Cog):
@@ -219,7 +376,7 @@ class Moderation(commands.Cog):
         panel_embed.set_footer(text="Advanced Moderation Protocol")
         
         # Pull permissions directly from the interaction environment
-        view = ModerateView(interaction, target)
+        view = ModerateView(interaction, target, self.bot)
         await interaction.response.send_message(embed=panel_embed, view=view, ephemeral=True)
 
     @moderate_command.error

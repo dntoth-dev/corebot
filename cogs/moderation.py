@@ -3,7 +3,7 @@ import datetime
 from discord import app_commands
 from discord.ext import commands
 import config
-from datetime import datetime, timezone
+import datetime
 
 
 # ==========================================
@@ -284,7 +284,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -312,7 +312,7 @@ class Moderation(commands.Cog):
         else:
             print(f"An error occurred in /mute: {error}")
             if not interaction.response.is_done():
-                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+                await interaction.response.send_message("❌ An unexpected error occurred. Check permissions.", ephemeral=True)
 
 
 
@@ -361,7 +361,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -389,7 +389,7 @@ class Moderation(commands.Cog):
         else:
             print(f"An error occurred in /unmute: {error}")
             if not interaction.response.is_done():
-                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+                await interaction.response.send_message("❌ An unexpected error occurred. Check permissions.", ephemeral=True)
 
 
 
@@ -441,7 +441,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -469,7 +469,7 @@ class Moderation(commands.Cog):
         else:
             print(f"An error occurred in /kick: {error}")
             if not interaction.response.is_done():
-                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+                await interaction.response.send_message("❌ An unexpected error occurred. Check permissions.", ephemeral=True)
 
 
 
@@ -521,7 +521,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -549,7 +549,7 @@ class Moderation(commands.Cog):
         else:
             print(f"An error occurred in /ban: {error}")
             if not interaction.response.is_done():
-                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+                await interaction.response.send_message("❌ An unexpected error occurred. Check permissions.", ephemeral=True)
 
 
 
@@ -604,7 +604,7 @@ class Moderation(commands.Cog):
                                     ),
                                     color=discord.Color.dark_grey()
                                 )
-                        embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                        embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
                         
                         # Robust Channel Retrieval
                         logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -634,7 +634,7 @@ class Moderation(commands.Cog):
         else:
             print(f"An error occurred in /unban: {error}")
             if not interaction.response.is_done():
-                await interaction.response.send_message("❌ An unexpected error occurred.", ephemeral=True)
+                await interaction.response.send_message("❌ An unexpected error occurred. Check permissions.", ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Moderation(bot))

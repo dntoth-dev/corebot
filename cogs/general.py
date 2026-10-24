@@ -143,7 +143,7 @@ class General(commands.Cog):
         app_commands.Choice(name="Disable", value="disable"),
         app_commands.Choice(name="Set Channel", value="set")
     ])
-    async def logging(self, interaction: discord.Interaction, action: str, channel: discord.TextChannel = None):
+    async def logging(self, interaction: discord.Interaction, action: str, channel: discord.TextChannel):
         await interaction.response.defer(ephemeral=True)
         
         # Server owner / Admin permission bypass guard

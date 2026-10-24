@@ -246,8 +246,8 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
         await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
         
         # region DATABASE STORING
-        warn_payload = {"guild_id": interaction.guild.id, "created_at": datetime.datetime.now(datetime.timezone.utc), "user_id": self.target_member.id, "moderator_id": interaction.user.id, "reason": self.reason.value}
-        await self.bot.db.client.table("warnings").upsert(warn_payload).execute()
+        warn_payload = {"guild_id": interaction.guild.id, "created_at": datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'), "user_id": self.target_member.id, "moderator_id": interaction.user.id, "reason": self.reason.value}
+        await self.bot.db.client.table("warnings").insert(warn_payload).execute()
         # endregion
         
         

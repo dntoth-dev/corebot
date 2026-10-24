@@ -8,9 +8,10 @@ class HelpDropdown(discord.ui.Select):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         options = [
-            discord.SelectOption(label="Core System", value="general", description="System configurations", emoji="🔳"),
-            discord.SelectOption(label="Moderation Suite", value="moderation", description="Administrative tools", emoji="🛡️"),
-            discord.SelectOption(label="Entertainment", value="fun", description="Community games", emoji="🎲")
+            discord.SelectOption(label="Core System", value="general", description="System configurations", emoji="⚙️"),
+            discord.SelectOption(label="Moderation Suite", value="moderation", description="Moderation utilities", emoji="⚔️"),
+            discord.SelectOption(label="Entertainment", value="fun", description="Community games", emoji="🎲"),
+            discord.SelectOption(label="Security", value="security", description="Server protection utilities", emoji="🛡️")
         ]
         super().__init__(placeholder="Select a module engine to inspect...", options=options)
 
@@ -21,7 +22,8 @@ class HelpDropdown(discord.ui.Select):
         cog_mapping = {
             "general": "General",
             "moderation": "Moderation",
-            "fun": "Fun"
+            "fun": "Fun",
+            "security": "Security"
         }
         
         # Look up the true class name, fallback to title-case if not found

@@ -10,7 +10,6 @@ class HelpDropdown(discord.ui.Select):
         options = [
             discord.SelectOption(label="Core System", value="general", description="System configurations", emoji="🔳"),
             discord.SelectOption(label="Moderation Suite", value="moderation", description="Administrative tools", emoji="🛡️"),
-            discord.SelectOption(label="YouTube Tracker", value="youtube", description="Notification engines", emoji="📺"),
             discord.SelectOption(label="Entertainment", value="fun", description="Community games", emoji="🎲")
         ]
         super().__init__(placeholder="Select a module engine to inspect...", options=options)
@@ -22,7 +21,6 @@ class HelpDropdown(discord.ui.Select):
         cog_mapping = {
             "general": "General",
             "moderation": "Moderation",
-            "youtube": "YouTube",
             "fun": "Fun"
         }
         

@@ -500,6 +500,45 @@ class Moderation(commands.Cog):
         if interaction.guild.me.top_role > member.top_role:
             await member.ban(reason=reason)
             await interaction.response.send_message(f"### Ban successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
+            
+            # region logging
+            logging_config = await self.bot.db.client.table("server_settings") \
+                                            .select("logging_enabled, logging_channel_id") \
+                                            .eq("guild_id", interaction.guild.id) \
+                                            .execute()
+                                            
+            logging_settings = logging_config.data[0] if logging_config.data else None
+            if logging_settings is not None:
+                logging_enabled = logging_settings.get("logging_enabled")
+                if logging_enabled:
+                    logging_channel_id = logging_settings.get("logging_channel_id")
+                    embed = discord.Embed(
+                                title=f"{member.name} was banned.",
+                                description=(
+                                    f"**Reason:** {reason}\n\n"
+                                    f"Member ID: {member.id}\n"
+                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                                ),
+                                color=discord.Color.dark_grey()
+                            )
+                    embed.set_footer(text=f"{datetime.now(timezone.utc)} UTC")
+                    
+                    # Robust Channel Retrieval
+                    logging_channel = interaction.guild.get_channel(logging_channel_id)
+                    if not logging_channel:
+                        try:
+                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                        except discord.HTTPException:
+                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                            return
+                    try:
+                        log = await logging_channel.send(embed=embed)
+                    except discord.Forbidden:
+                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                        return
+                else: return
+            else: return
+            # endregion
         else:
             await interaction.response.send_message("Failed to ban because my role hierarchy position is too low.", ephemeral=True)
 

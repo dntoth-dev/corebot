@@ -245,6 +245,12 @@ class WarnModal(discord.ui.Modal, title="🛡️ Core: Issue warning"):
         confirmation_embed.add_field(name="Reason", value=self.reason.value, inline=False)
         await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
         
+        # region DATABASE STORING
+        warn_payload = {"guild_id": interaction.guild.id, "created_at": datetime.datetime.now(datetime.timezone.utc), "user_id": self.target_member.id, "moderator_id": interaction.user.id, "reason": self.reason.value}
+        await self.bot.db.client.table("warnings").upsert(warn_payload).execute()
+        # endregion
+        
+        
         # region logging
         logging_config = await self.bot.db.client.table("server_settings") \
                                         .select("logging_enabled, logging_channel_id") \

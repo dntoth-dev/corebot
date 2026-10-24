@@ -284,7 +284,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -361,7 +361,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -441,7 +441,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -521,7 +521,7 @@ class Moderation(commands.Cog):
                                 ),
                                 color=discord.Color.dark_grey()
                             )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
+                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
                     
                     # Robust Channel Retrieval
                     logging_channel = interaction.guild.get_channel(logging_channel_id)
@@ -604,7 +604,7 @@ class Moderation(commands.Cog):
                                     ),
                                     color=discord.Color.dark_grey()
                                 )
-                        embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc)} UTC")
+                        embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
                         
                         # Robust Channel Retrieval
                         logging_channel = interaction.guild.get_channel(logging_channel_id)

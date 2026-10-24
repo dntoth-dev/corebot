@@ -3,6 +3,7 @@ from discord.ext import commands
 import config
 from database import SupabaseManager
 import logging
+import asyncio
 
 logger = logging.getLogger("corebot")
 
@@ -57,7 +58,7 @@ async def on_guild_join(guild: discord.Guild):
     guild_data = {"guild_name": guild.name, "guild_id": str(guild.id)}
     if bot.db.client:
         try: 
-            await bot.db.client.table("server_settings").upsert(guild_data, on_conflict="guild_id").execute()
+            await asyncio.to_thread(bot.db.client.table("server_settings").upsert(guild_data, on_conflict="guild_id").execute)
             logger.info(f"Registered guild {guild.name} ({guild.id}) in database.")
         except Exception as e:
             logger.error(f"Failed to insert guild {guild.id} into database: {e}")

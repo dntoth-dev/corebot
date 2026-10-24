@@ -37,6 +37,11 @@ class MyBot(commands.Bot):
             await self.load_extension(ext)
             print(f"Loaded extension: {ext}")
             
+        # Syncing commands globally
+        print("Syncing command tree globally...")
+        synced = await self.tree.sync()
+        print(f"Successfully synced {len(synced)} command(s) globally.")
+            
 bot = MyBot()
 
 @bot.event

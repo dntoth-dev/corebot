@@ -112,7 +112,7 @@ class Security(commands.Cog):
                     "**DO NOT TYPE IN THIS CHANNEL.**\n\n"
                     "This channel functions as an automated security tripwire designed to catch "
                     "and neutralize compromised accounts, spammers, and malicious user-bots.\n\n"
-                    "⚠️ **Sending any message here will result in an immediate automated ban.**"
+                    "⚠️ **Sending any message here will result in an immediate softban.**"
                 ),
                 color=discord.Color.red()
             )

@@ -86,3 +86,5 @@ Under the terms of AGPL-3.0, any modified network-hosted version of this codebas
 ## 💬 Issues & Support
 
 If you discover a bug, security flaw, or operational error, reach out directly on Discord: **`@td.official`**
+
+<img width="1280" height="720" alt="Core_Bot_v0 1_GitHub_Release_260925" src="https://github.com/user-attachments/assets/ecf6730e-b4e3-48a1-9f97-b54de0f74b15" />

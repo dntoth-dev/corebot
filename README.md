@@ -20,19 +20,23 @@
 
 ## 📌 Introduction
 
-Welcome to the official repository for **Core Bot**. Core is a multi-purpose, open-source Discord bot built to empower server staff with quick moderation GUI tools, automated anti-spam security, server insights, and engaging community utilities—all backed by a fast edge web dashboard.
+Welcome to the official repository for **Core Bot**. Core is a multi-purpose, open-source Discord bot built to empower server staff with quick moderation GUI tools, automated server security features, server insights, and engaging community utilities, all backed by a fast edge web dashboard.
 
-The goal of this project is a Discord bot with many free-to-use commands, features and customisation, available and accessible for everyone through a modern web dashboard.
+The goal of this project is to build an open-source, high quality and reliable Discord bot with many free-to-use commands, features and customisation, available and accessible for everyone on Discord and by a modern dashboard interface.
 
-The project is under active development and regularly updated with new features and improvements.
+```
+Keep in mind that the project is under active development and regularly updated with new features and improvements. This also implies that the bot can be unstable or can include bugs. For the highest security and stability, please use the latest stable version available on the website and in this repository.
+```
+
 
 ---
 
 ## 🛡️ Key Features
 
-* **🛡️ `/moderate` Dashboard:** An interactive GUI-driven moderation command designed for server staff to perform quick enforcement actions without memorizing complex syntax.
-* **🚨 `/sentry` Defense System:** An automated, 24/7 server protection mechanism against spammers and self-bots using honeypot detection channels that softban unauthorized user-bots upon interaction.
-* **⚙️ Dynamic Configuration:** Customizable guild preferences stored persistently in PostgreSQL.
+* **🛡️ `/moderate` Dashboard:** One command to remember, every moderation action bundled in an easy-to-use interactive graphical interface.
+* **🚨 `/sentry` Defense System:** An automated, text 24/7 server protection utility against spammers and self-bots using trap text channels.
+* **📝 `/logging` Logging:** The bot can be set to log every moderation action (including warnings, mutes, kicks, bans, and their counteracts) in a desired channel.
+* **⚙️ Dynamic Configuration and Storage:** Customizable guild preferences and user warnings are stored persistently in PostgreSQL.
 * *(More features are being rolled out alongside major production releases.)*
 ---
 ## 🚧 Limitations
@@ -40,7 +44,12 @@ The project is under active development and regularly updated with new features 
 ### ⚠️ The most recent commits are not implemented in the current website version.
 Recent commits are for the new website version - still under maintenance - and lives under [https://v02a1.core-bot.pages.dev](https://v02a1.core-bot.pages.dev), which is not accessible to the public yet. The current [webpage](https://core-bot.pages.dev) is static, and features the essentials only, such as a Bot Invite Button, a Homepage, a Privacy-Policy and a Terms Of Service. The navbar buttons (Commands, Premium, Support) do not work yet.
 
-**There is no dashboard in the current version!**
+### ⚠️ There is no dashboard in the current version!
+The interactive dashboard and web-level Discord integration is coming in a major future update.
+
+### ⚠️ User warnings cannot be retrieved or deleted in the current version
+User warnings are stored securely in the database system, however no commands are developed currently to remove or retrieve old warnings. This feature will be implemented in an update very soon.
+
 ---
 ## 🛠️ Tech Stack
 
@@ -55,17 +64,19 @@ Core Bot combines a Python bot client with modern edge architecture:
 
 ---
 
-## 🚀 Roadmap & Project Status
+## 🚀 Roadmap, Project Status, What's Planned
 
 Core Bot is currently on **`v0.1-stable`**. While the core infrastructure is active, public instance distribution is undergoing final testing, and the Discord OAuth2 authorisation is still under maintenance.
 
-- [x] Core moderation commands (`/moderate`)
-- [x] Automated honeypot anti-spam (`/sentry`)
+- [x] Moderation commands (`/moderate`)
+- [x] Anti-spam defense (`/sentry`)
 - [x] Supabase database schema & configuration binding
-- [ ] Cloudflare Pages Functions edge API pipeline
+- [x] Public invite link release
+- [x] Basic logging (`/logging`)
+- [ ] User warning retrieval from database
 - [ ] Complete Discord OAuth2 login integration
 - [ ] Interactive Web Dashboard UI (`manage.html`)
-- [ ] Public invite link release & self-hosting documentation
+- [ ] Web dashboard backend and Discord integration
 
 ---
 

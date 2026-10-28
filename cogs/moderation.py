@@ -398,8 +398,39 @@ class Moderation(commands.Cog):
 
 
 
-
-
+    # Function for quickly logging moderation actions
+    async def mod_log(self, log_message, interaction: discord.Interaction):
+        if not interaction.guild:
+            return
+        logging_config = await self.bot.db.client.table("server_settings") \
+                                                .select("logging_enabled, logging_channel_id") \
+                                                .eq("guild_id", interaction.guild.id) \
+                                                .execute()
+                                                
+        logging_settings = logging_config.data[0] if logging_config.data else None
+        if logging_settings is not None:
+            logging_enabled = logging_settings.get("logging_enabled")
+            if logging_enabled:
+                logging_channel_id = logging_settings.get("logging_channel_id")
+                    
+                # Robust Channel Retrieval
+                logging_channel = interaction.guild.get_channel(logging_channel_id)
+                if not logging_channel:
+                    try:
+                        logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                    except discord.HTTPException:
+                        await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                        return
+                try:
+                    if isinstance(log_message, discord.Embed):
+                        log = await logging_channel.send(embed=log_message)
+                    else:
+                        log = await logging_channel.send(str(log_message))
+                except discord.Forbidden:
+                    await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                    return
+            else: return
+        else: return
 
 
 

@@ -357,6 +357,40 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
+    # Function for quickly logging moderation actions
+    async def mod_log(self, log_message, interaction: discord.Interaction):
+        if not interaction.guild:
+            return
+        logging_config = await self.bot.db.client.table("server_settings") \
+                                                .select("logging_enabled, logging_channel_id") \
+                                                .eq("guild_id", interaction.guild.id) \
+                                                .execute()
+                                                
+        logging_settings = logging_config.data[0] if logging_config.data else None
+        if logging_settings is not None:
+            logging_enabled = logging_settings.get("logging_enabled")
+            if logging_enabled:
+                logging_channel_id = logging_settings.get("logging_channel_id")
+                    
+                # Robust Channel Retrieval
+                logging_channel = interaction.guild.get_channel(logging_channel_id)
+                if not logging_channel:
+                    try:
+                        logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                    except discord.HTTPException:
+                        await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                        return
+                try:
+                    if isinstance(log_message, discord.Embed):
+                        log = await logging_channel.send(embed=log_message)
+                    else:
+                        log = await logging_channel.send(str(log_message))
+                except discord.Forbidden:
+                    await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                    return
+            else: return
+        else: return
+        
     # /moderate command
     @app_commands.command(name="moderate", description="Launches Core's central all-in-one administrative terminal panel.")
     @app_commands.default_permissions(moderate_members=True)
@@ -398,39 +432,7 @@ class Moderation(commands.Cog):
 
 
 
-    # Function for quickly logging moderation actions
-    async def mod_log(self, log_message, interaction: discord.Interaction):
-        if not interaction.guild:
-            return
-        logging_config = await self.bot.db.client.table("server_settings") \
-                                                .select("logging_enabled, logging_channel_id") \
-                                                .eq("guild_id", interaction.guild.id) \
-                                                .execute()
-                                                
-        logging_settings = logging_config.data[0] if logging_config.data else None
-        if logging_settings is not None:
-            logging_enabled = logging_settings.get("logging_enabled")
-            if logging_enabled:
-                logging_channel_id = logging_settings.get("logging_channel_id")
-                    
-                # Robust Channel Retrieval
-                logging_channel = interaction.guild.get_channel(logging_channel_id)
-                if not logging_channel:
-                    try:
-                        logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                    except discord.HTTPException:
-                        await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                        return
-                try:
-                    if isinstance(log_message, discord.Embed):
-                        log = await logging_channel.send(embed=log_message)
-                    else:
-                        log = await logging_channel.send(str(log_message))
-                except discord.Forbidden:
-                    await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                    return
-            else: return
-        else: return
+    
 
 
 
@@ -463,42 +465,19 @@ class Moderation(commands.Cog):
         
         
         # region logging
-        logging_config = await self.bot.db.client.table("server_settings") \
-                                        .select("logging_enabled, logging_channel_id") \
-                                        .eq("guild_id", interaction.guild.id) \
-                                        .execute()
-                                        
-        logging_settings = logging_config.data[0] if logging_config.data else None
-        if logging_settings is not None:
-            logging_enabled = logging_settings.get("logging_enabled")
-            if logging_enabled:
-                logging_channel_id = logging_settings.get("logging_channel_id")
-                embed = discord.Embed(
-                            title=f"{member.name} was warned.",
-                            description=(
-                                f"**Reason:** {reason}\n\n"
-                                f"Member ID: {member.id}\n"
-                                f"Moderator: {interaction.user} (ID: {interaction.user.id})"
-                            ),
-                            color=discord.Color.dark_grey()
-                        )
-                embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
-                
-                # Robust Channel Retrieval
-                logging_channel = interaction.guild.get_channel(logging_channel_id)
-                if not logging_channel:
-                    try:
-                        logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                    except discord.HTTPException:
-                        await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                        return
-                try:
-                    log = await logging_channel.send(embed=embed)
-                except discord.Forbidden:
-                    await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                    return
-            else: return
-        else: return
+        log_embed = discord.Embed(
+                    title=f"{member.name} was warned.",
+                    description=(
+                        f"**Reason:** {reason}\n\n"
+                        f"Member ID: {member.id}\n"
+                        f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                    ),
+                    color=discord.Color.dark_grey()
+                )
+        log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+        await self.mod_log(log_embed, interaction)
+
+        
         
                 
     
@@ -519,43 +498,19 @@ class Moderation(commands.Cog):
             await member.timeout(duration, reason=reason)
             await interaction.response.send_message(f"### Timeout successful!\n**User:** {member.name} (ID: {member.id})\n**Duration:** {minutes} minutes\n**Reason:** {reason}")
             # region logging
-            logging_config = await self.bot.db.client.table("server_settings") \
-                                            .select("logging_enabled, logging_channel_id") \
-                                            .eq("guild_id", interaction.guild.id) \
-                                            .execute()
-                                            
-            logging_settings = logging_config.data[0] if logging_config.data else None
-            if logging_settings is not None:
-                logging_enabled = logging_settings.get("logging_enabled")
-                if logging_enabled:
-                    logging_channel_id = logging_settings.get("logging_channel_id")
-                    embed = discord.Embed(
-                                title=f"{member.name} was muted.",
-                                description=(
-                                    f"**Mute duration:** {minutes} minutes\n"
-                                    f"**Reason:** {reason}\n\n"
-                                    f"Member ID: {member.id}\n"
-                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
-                                ),
-                                color=discord.Color.dark_grey()
-                            )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
-                    
-                    # Robust Channel Retrieval
-                    logging_channel = interaction.guild.get_channel(logging_channel_id)
-                    if not logging_channel:
-                        try:
-                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                        except discord.HTTPException:
-                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                            return
-                    try:
-                        log = await logging_channel.send(embed=embed)
-                    except discord.Forbidden:
-                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                        return
-                else: return
-            else: return
+            
+            log_embed = discord.Embed(
+                        title=f"{member.name} was muted.",
+                        description=(
+                            f"**Mute duration:** {minutes} minutes\n"
+                            f"**Reason:** {reason}\n\n"
+                            f"Member ID: {member.id}\n"
+                            f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                        ),
+                        color=discord.Color.dark_grey()
+                    )
+            log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+            await self.mod_log(log_embed, interaction)
             # endregion
         else:
             await interaction.response.send_message("Failed to timeout because my role hierarchy position is too low.", ephemeral=True)
@@ -597,42 +552,17 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Untimeout successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
             
             # region logging
-            logging_config = await self.bot.db.client.table("server_settings") \
-                                            .select("logging_enabled, logging_channel_id") \
-                                            .eq("guild_id", interaction.guild.id) \
-                                            .execute()
-                                            
-            logging_settings = logging_config.data[0] if logging_config.data else None
-            if logging_settings is not None:
-                logging_enabled = logging_settings.get("logging_enabled")
-                if logging_enabled:
-                    logging_channel_id = logging_settings.get("logging_channel_id")
-                    embed = discord.Embed(
-                                title=f"{member.name} was unmuted.",
-                                description=(
-                                    f"**Reason:** {reason}\n\n"
-                                    f"Member ID: {member.id}\n"
-                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
-                                ),
-                                color=discord.Color.dark_grey()
-                            )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
-                    
-                    # Robust Channel Retrieval
-                    logging_channel = interaction.guild.get_channel(logging_channel_id)
-                    if not logging_channel:
-                        try:
-                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                        except discord.HTTPException:
-                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                            return
-                    try:
-                        log = await logging_channel.send(embed=embed)
-                    except discord.Forbidden:
-                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                        return
-                else: return
-            else: return
+            log_embed = discord.Embed(
+                        title=f"{member.name} was unmuted.",
+                        description=(
+                            f"**Reason:** {reason}\n\n"
+                            f"Member ID: {member.id}\n"
+                            f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                        ),
+                        color=discord.Color.dark_grey()
+                    )
+            log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+            await self.mod_log(log_embed, interaction)
             # endregion
         else:
             await interaction.response.send_message("Failed to untimeout because my role hierarchy position is too low.", ephemeral=True)
@@ -677,42 +607,17 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Kick successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
             
             # region logging
-            logging_config = await self.bot.db.client.table("server_settings") \
-                                            .select("logging_enabled, logging_channel_id") \
-                                            .eq("guild_id", interaction.guild.id) \
-                                            .execute()
-                                            
-            logging_settings = logging_config.data[0] if logging_config.data else None
-            if logging_settings is not None:
-                logging_enabled = logging_settings.get("logging_enabled")
-                if logging_enabled:
-                    logging_channel_id = logging_settings.get("logging_channel_id")
-                    embed = discord.Embed(
-                                title=f"{member.name} was kicked.",
-                                description=(
-                                    f"**Reason:** {reason}\n\n"
-                                    f"Member ID: {member.id}\n"
-                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
-                                ),
-                                color=discord.Color.dark_grey()
-                            )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
-                    
-                    # Robust Channel Retrieval
-                    logging_channel = interaction.guild.get_channel(logging_channel_id)
-                    if not logging_channel:
-                        try:
-                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                        except discord.HTTPException:
-                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                            return
-                    try:
-                        log = await logging_channel.send(embed=embed)
-                    except discord.Forbidden:
-                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                        return
-                else: return
-            else: return
+            log_embed = discord.Embed(
+                        title=f"{member.name} was kicked.",
+                        description=(
+                            f"**Reason:** {reason}\n\n"
+                            f"Member ID: {member.id}\n"
+                            f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                        ),
+                        color=discord.Color.dark_grey()
+                    )
+            log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+            await self.mod_log(log_embed, interaction)
             # endregion
         else:
             await interaction.response.send_message("Failed to kick because my role hierarchy position is too low.", ephemeral=True)
@@ -757,42 +662,17 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"### Ban successful!\n**User:** {member.name} (ID: {member.id})\n**Reason:** {reason}")
             
             # region logging
-            logging_config = await self.bot.db.client.table("server_settings") \
-                                            .select("logging_enabled, logging_channel_id") \
-                                            .eq("guild_id", interaction.guild.id) \
-                                            .execute()
-                                            
-            logging_settings = logging_config.data[0] if logging_config.data else None
-            if logging_settings is not None:
-                logging_enabled = logging_settings.get("logging_enabled")
-                if logging_enabled:
-                    logging_channel_id = logging_settings.get("logging_channel_id")
-                    embed = discord.Embed(
-                                title=f"{member.name} was banned.",
-                                description=(
-                                    f"**Reason:** {reason}\n\n"
-                                    f"Member ID: {member.id}\n"
-                                    f"Moderator: {interaction.user} (ID: {interaction.user.id})"
-                                ),
-                                color=discord.Color.dark_grey()
-                            )
-                    embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
-                    
-                    # Robust Channel Retrieval
-                    logging_channel = interaction.guild.get_channel(logging_channel_id)
-                    if not logging_channel:
-                        try:
-                            logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                        except discord.HTTPException:
-                            await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                            return
-                    try:
-                        log = await logging_channel.send(embed=embed)
-                    except discord.Forbidden:
-                        await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                        return
-                else: return
-            else: return
+            log_embed = discord.Embed(
+                        title=f"{member.name} was banned.",
+                        description=(
+                            f"**Reason:** {reason}\n\n"
+                            f"Member ID: {member.id}\n"
+                            f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                        ),
+                        color=discord.Color.dark_grey()
+                    )
+            log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+            await self.mod_log(log_embed, interaction)
             # endregion
         else:
             await interaction.response.send_message("Failed to ban because my role hierarchy position is too low.", ephemeral=True)
@@ -840,44 +720,18 @@ class Moderation(commands.Cog):
                 handled = True
                 
                 # region logging
-                logging_config = await self.bot.db.client.table("server_settings") \
-                                                .select("logging_enabled, logging_channel_id") \
-                                                .eq("guild_id", interaction.guild.id) \
-                                                .execute()
-                                                
-                logging_settings = logging_config.data[0] if logging_config.data else None
-                if logging_settings is not None:
-                    logging_enabled = logging_settings.get("logging_enabled")
-                    if logging_enabled:
-                        logging_channel_id = logging_settings.get("logging_channel_id")
-                        embed = discord.Embed(
-                                    title=f"{user.name} was unbanned.",
-                                    description=(
-                                        f"**Reason:** {reason}\n\n"
-                                        f"Member ID: {user.id}\n"
-                                        f"Moderator: {interaction.user} (ID: {interaction.user.id})"
-                                    ),
-                                    color=discord.Color.dark_grey()
-                                )
-                        embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
-                        
-                        # Robust Channel Retrieval
-                        logging_channel = interaction.guild.get_channel(logging_channel_id)
-                        if not logging_channel:
-                            try:
-                                logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
-                            except discord.HTTPException:
-                                await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
-                                return
-                        try:
-                            log = await logging_channel.send(embed=embed)
-                        except discord.Forbidden:
-                            await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
-                            return
-                    else: return
-                else: return
+                log_embed = discord.Embed(
+                            title=f"{user.name} was unbanned.",
+                            description=(
+                                f"**Reason:** {reason}\n\n"
+                                f"Member ID: {user.id}\n"
+                                f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                            ),
+                            color=discord.Color.dark_grey()
+                        )
+                log_embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                await self.mod_log(log_embed, interaction)
                 # endregion
-                
                 break
         if not handled:
             await interaction.response.send_message("User not found in ban list.", ephemeral=True)

@@ -456,7 +456,7 @@ class Moderation(commands.Cog):
         confirmation_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
         confirmation_embed.add_field(name="Target", value=f"{member.mention}", inline=True)
         confirmation_embed.add_field(name="Reason", value=reason, inline=False)
-        await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+        await interaction.response.send_message(embed=confirmation_embed, ephemeral=True)
         
         # region DATABASE STORING
         warn_payload = {"guild_id": interaction.guild.id, "created_at": datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'), "user_id": member.id, "moderator_id": interaction.user.id, "reason": reason}

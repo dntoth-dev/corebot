@@ -409,6 +409,67 @@ class Moderation(commands.Cog):
     # Single-action moderation commands below...
     
     # warn..
+    @app_commands.command(name="warn", description="Issue a warning to a user.")
+    @app_commands.default_permissions(moderate_members=True)
+    async def warn(self, interaction: discord.Interaction, member: discord.Member, reason: str):
+        if not interaction.guild:
+            return
+        
+        is_owner = interaction.guild and interaction.guild.owner_id == interaction.user.id
+        if not (interaction.permissions.moderate_members or is_owner):
+            await interaction.response.send_message("❌ You do not have permission to use this command.", ephemeral=True)
+            return
+        
+        confirmation_embed = discord.Embed(title="⚡ Action Executed: Written Warning", color=0xE74C3C)
+        confirmation_embed.add_field(name="Target", value=f"{member.mention}", inline=True)
+        confirmation_embed.add_field(name="Reason", value=reason, inline=False)
+        await interaction.followup.send(embed=confirmation_embed, ephemeral=True)
+        
+        # region DATABASE STORING
+        warn_payload = {"guild_id": interaction.guild.id, "created_at": datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S'), "user_id": member.id, "moderator_id": interaction.user.id, "reason": reason}
+        await self.bot.db.client.table("warnings").insert(warn_payload).execute()
+        # endregion
+        
+        
+        # region logging
+        logging_config = await self.bot.db.client.table("server_settings") \
+                                        .select("logging_enabled, logging_channel_id") \
+                                        .eq("guild_id", interaction.guild.id) \
+                                        .execute()
+                                        
+        logging_settings = logging_config.data[0] if logging_config.data else None
+        if logging_settings is not None:
+            logging_enabled = logging_settings.get("logging_enabled")
+            if logging_enabled:
+                logging_channel_id = logging_settings.get("logging_channel_id")
+                embed = discord.Embed(
+                            title=f"{member.name} was warned.",
+                            description=(
+                                f"**Reason:** {reason}\n\n"
+                                f"Member ID: {member.id}\n"
+                                f"Moderator: {interaction.user} (ID: {interaction.user.id})"
+                            ),
+                            color=discord.Color.dark_grey()
+                        )
+                embed.set_footer(text=f"{datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
+                
+                # Robust Channel Retrieval
+                logging_channel = interaction.guild.get_channel(logging_channel_id)
+                if not logging_channel:
+                    try:
+                        logging_channel = await interaction.guild.fetch_channel(logging_channel_id)
+                    except discord.HTTPException:
+                        await interaction.followup.send("⚠️ Logging error: Could not find or access the configured logging channel.\n""-# If the channel does not exist anymore, reconfigure or disable logging with the `/logging` command.", ephemeral=True)
+                        return
+                try:
+                    log = await logging_channel.send(embed=embed)
+                except discord.Forbidden:
+                    await interaction.followup.send("⚠️ Logging error: Bot lacks permission to send or pin messages in the logging channel.\n""-# Ensure that the bot has permissions to type in the channel and that the channel type is not forum, rules or announcements.", ephemeral=True)
+                    return
+            else: return
+        else: return
+        
+                
     
     @app_commands.command(name="mute", description="Timeout a member (mute).")
     @app_commands.default_permissions(moderate_members=True)

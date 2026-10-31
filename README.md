@@ -2,7 +2,7 @@
 
 # ⚙️ Core Bot
 
-**An open-source, all-rounder application for any Discord community**
+**An open-source, all-rounder application for any Discord community.**
 
 ![License: AGPL v3.0](https://img.shields.io/badge/License-AGPL_v3.0-blue.svg)
 ![Version](https://img.shields.io/badge/Version-v0.1--stable-orange.svg)
@@ -20,17 +20,17 @@
 
 ## 📌 Introduction
 
-Welcome to the official repository for **Core Bot**. Core is a multi-purpose, open-source Discord bot built to empower server staff with quick moderation GUI tools, automated server security features, server insights, and engaging community utilities, all backed by a fast edge web dashboard.
+Welcome to the official repository for **Core Bot**. Core is an initiative for a multi-purpose, open-source Discord bot built to empower server staff with quick moderation GUI tools, automated server security features, server insights, and engaging community utilities, all backed by a fast web dashboard.
 
-The goal of this project is to build an open-source, high quality and reliable Discord bot with many free-to-use commands, features and customisation, available and accessible for everyone on Discord and by a modern dashboard interface.
+The goal of this project is to build a high quality and reliable Discord bot with many free-to-use commands, features and customisation, available and accessible for everyone on Discord with publicly accessible source-code to encourage contributions.
 
-### Keep in mind that the project is under active development and regularly updated with new features and improvements. This also implies that the bot can be unstable or can include bugs. For the highest security and stability, please use the latest stable version available on the website and in this repository.
+### Keep in mind that the project is under active development and regularly updated with new features and improvements. This also implies that the bot can be unstable or can include bugs. For the highest security and stability, it is advised to use the latest stable version available on the website and in this repository.
 ---
 ## 🛡️ Key Features
 
-* **🛡️ `/moderate` Dashboard:** One command to remember, every moderation action bundled in an easy-to-use interactive graphical interface.
-* **🚨 `/sentry` Defense System:** An automated, text 24/7 server protection utility against spammers and self-bots using trap text channels.
-* **📝 `/logging` Logging:** The bot can be set to log every moderation action (including warnings, mutes, kicks, bans, and their counteracts) in a desired channel.
+* **🛡️ `/moderate` Dashboard:** One command to remember, with every moderation action bundled in an easy-to-use interactive graphical interface.
+* **🚨 `/sentry` Defense System:** An automated, text 24/7 server protection utility against spammers and self-bots using trap channels.
+* **📝 `/logging` Logging:** Log and record every moderation action (including warnings, mutes, kicks, bans, and their counteracts) in a desired channel.
 * **⚙️ Dynamic Configuration and Storage:** Customizable guild preferences and user warnings are stored persistently in PostgreSQL.
 * *(More features are being rolled out alongside major production releases.)*
 ---
@@ -46,26 +46,14 @@ The interactive dashboard and web-level Discord integration is coming in a major
 User warnings are stored securely in the database system, however no commands are developed currently to remove or retrieve old warnings. This feature will be implemented in an update very soon.
 
 ---
-## 🛠️ Tech Stack
-
-Core Bot combines a Python bot client with modern edge architecture:
-
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Bot Engine** | `Python` / `discord.py` | Handles real-time gateway events, commands, and moderation triggers. |
-| **Edge Backend** | `Cloudflare Pages Functions` | Serverless REST API handlers for authentication and dashboard backend logic. |
-| **Database** | `Supabase` | Persistent state, session data, and per-guild configuration using PostgreSQL and Row Level Security (RLS). |
-| **Frontend** | `HTML5` / `Tailwind CSS` | Clean web management dashboard interfaced via Discord OAuth2. |
-
----
 
 ## 🚀 Roadmap, Project Status, What's Planned
 
-Core Bot is currently on **`v0.1-stable`**. The bot is now publicly available for invitation to any server, with its core functions in a stable state. The dashboard is the next large upcoming update, with the Discord OAuth2 authorisation and required backend integrations still under maintenance.
+Core Bot is currently on main version **`v0.1-stable`**. The bot is publicly available for invitation to any server, with its current functions in a stable state. The dashboard will be featured in the next major upcoming update, since Discord OAuth2 and required backend integrations are still under maintenance.
 
 - [x] Moderation commands (`/moderate`)
 - [x] Anti-spam defense (`/sentry`)
-- [x] Supabase database schema & configuration binding
+- [x] Unique server settings and user warnings stored in Supabase
 - [x] Public invite link release
 - [x] Basic logging (`/logging`)
 - [ ] User warning retrieval from database
@@ -77,20 +65,38 @@ Core Bot is currently on **`v0.1-stable`**. The bot is now publicly available fo
 
 ## 📄 Privacy Policy & Data Handling
 
-Core Bot respects user privacy and processes only the minimum data necessary to operate server features and session security. To learn how server and session data are managed, please read our [Privacy Policy](https://core-bot.pages.dev/privacy-policy).
+Core Bot does not save sensitive information regarding your Discord account, nor does the bot interact with any other social media accounts. User-related data, such as warnings or unique preferences are strictly associated to the *Discord User ID*, which are stored privately in the bot's database. Core processes only the minimum data necessary to operate server features and session security.
+
+To thoroughly understand how your data is processed, please refer to our [Privacy Policy](https://core-bot.pages.dev/privacy-policy).
 
 ---
 
 ## 📜 License
 
-This project is open-source software licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+Core Bot, its source code, and other related services are part of the open-source project licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
 
-Under the terms of AGPL-3.0, any modified network-hosted version of this codebase must also make its source code publicly available under the same license. For full terms, please refer to the [`LICENSE`](./LICENSE) file in this repository.
+Under the terms of AGPL-3.0, any modified and network hosted version of this codebase must also make its source code publicly available under the same license. For full terms, please refer to the [`LICENSE`](./LICENSE) file in this repository.
+
 
 ---
 
 ## 💬 Issues & Support
 
-If you discover a bug, security flaw, or operational error, reach out directly on Discord: **`@td.official`**
+<pre style="white-space: pre-wrap; wrap-whitespace: true;">
+Users who discover a bug (a.k.a. operational error or security flaw) are advised to report it promptly via <a href="https://discord.gg/N3t9gcmtD2">our support channel</a> by opening a ticket. Attempting to abuse bugs — or failing to report a known critical bug while actively benefiting from it — can result in access termination and blacklisting.
+</pre>
+
+### Intentionally exploiting, attempting to exploit, or benefiting from bugs, glitches, memory leaks, or unintended system mechanics within Core Bot is strictly prohibited.
+
+---
+
+<div align=center>
+
+<h3>For inquiries, help, concerns, or if you'd like to follow the development and updates, you are welcome to join our Discord Server using the button below:<h3>
+
+[![Discord Server](https://img.shields.io/badge/Core_Bot_Support-darkblue.svg?logo=discord&logoColor=white&color=5865F2)](https://discord.gg/N3t9gcmtD2)
+
+</div>
+
 
 <img width="1280" height="720" alt="Core_Bot_v0 1_GitHub_Release_260925" src="https://github.com/user-attachments/assets/ecf6730e-b4e3-48a1-9f97-b54de0f74b15" />

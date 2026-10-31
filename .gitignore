@@ -6,3 +6,5 @@ web-ai/
 __pycache__/
 .vs/
 web-testing/
+web.old/
+web-development/.wrangler/

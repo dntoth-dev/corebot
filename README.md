@@ -82,9 +82,8 @@ Under the terms of AGPL-3.0, any modified and network hosted version of this cod
 
 ## 💬 Issues & Support
 
-<pre style="white-space: pre-wrap; wrap-whitespace: true;">
 Users who discover a bug (a.k.a. operational error or security flaw) are advised to report it promptly via <a href="https://discord.gg/N3t9gcmtD2">our support channel</a> by opening a ticket. Attempting to abuse bugs — or failing to report a known critical bug while actively benefiting from it — can result in access termination and blacklisting.
-</pre>
+
 
 ### Intentionally exploiting, attempting to exploit, or benefiting from bugs, glitches, memory leaks, or unintended system mechanics within Core Bot is strictly prohibited.
 

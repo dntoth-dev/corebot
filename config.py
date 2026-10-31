@@ -23,6 +23,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_ANON = os.getenv("SUPABASE_ANON")
 
 WEB_URL = "https://core-bot.pages.dev" # rmk: update ts on url change
+SUPPORT_SERVER_URL = "https://discord.gg/N3t9gcmtD2" # rmk: update ts on Discord Server Invite URL change
 
 # Global YouTube client instance
 youtube = build('youtube', 'v3', developerKey=YT_API) if YT_API else None

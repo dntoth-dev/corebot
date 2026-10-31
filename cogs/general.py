@@ -77,7 +77,7 @@ class HelpMenuView(discord.ui.View):
         
         self.add_item(discord.ui.Button(
             label="Join Support Server",
-            url="https://discord.gg/RUyAChCBc6",
+            url=config.SUPPORT_SERVER_URL,
             style=discord.ButtonStyle.link,
             emoji="📢"
         ))
